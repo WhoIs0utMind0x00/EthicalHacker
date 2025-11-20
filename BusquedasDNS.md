@@ -1,0 +1,106 @@
+# Búsquedas de DNS
+
+Supongamos, por ejemplo, que un atacante tiene un objetivo, h4cker.org, en la mira. h4cker.org tiene presencia en Internet, como la mayoría de las empresas. Esta presencia es un sitio web alojado en www.h4cker.org. Así como un ladrón en el hogar necesitaría determinar qué puntos de entrada y salida existen en un hogar antes de poder cometer un robo, un atacante cibernético debe determinar cuáles de los puertos y protocolos del objetivo están expuestos a Internet. Un ladrón puede caminar por el exterior de la casa, buscar puertas y ventanas, y luego posiblemente echar un vistazo a las cerraduras de las puertas para determinar sus debilidades. De manera similar, un atacante cibernético realizaría tareas como escaneo y enumeración.
+
+Por lo general, un atacante comenzaría con una pequeña cantidad de información y recopilaría más información durante el escaneo para, finalmente, realizar diferentes tipos de escaneo y recopilar información adicional. Por ejemplo, el atacante que apunta a h4cker.org podría comenzar usando búsquedas de DNS para determinar la dirección o direcciones IP utilizadas por h4cker.org y cualquier otro subdominio que pueda estar en uso. Supongamos que esas consultas revelan que h4cker.org utiliza las direcciones IP 185.199.108.153 para www.h4cker.org, 185.199.110.153 para mail.h4cker.org y 185.199.110.153 para portal.h4cker.org. El ejemplo 3-1 muestra un ejemplo de la herramienta DNSRecon en Kali Linux que se utiliza para consultar los registros DNS de h4cker.org.
+
+### *Ejemplo de DNSRecon*
+``` bash
+|--[omar@websploit]--[~]
+|--- $ dnsrecon -d h4cker.org
+[*] Performing General Enumeration of Domain: h4cker.org
+/usr/share/dnsrecon/./dnsrecon.py:816: DeprecationWarning: please use
+dns.resolver.Resolver.resolve() instead
+  answer = res._res.query(domain, 'DNSKEY')
+[*] DNSSEC is configured for h4cker.org
+[*] DNSKEYs:
+[*] NSEC3 ZSK RSASHA256 030100019ed0af43a7dc09d07e1646d2 b4036075e9187c4c563519155f888b60 8fdffe9c6d8a0a01522f78d25d257772 0a8e97d1350e694b272ec63af9708609 b3721e6b53a2d7aa8839585714800319 dd98f97b39d8768f7e975a449c001ce9 55189ea83f30a4fe6b4dff7b3dd15f89 1cef3a8d84968a980bde65c0b1309d5b 825a0f23
+[*] NSEC3 KSk RSASHA256 030100018403e0971df0dc1770f3b96a ca57eb68d03a84b4a712cadda60567fe a264f0e5d7ec4c8e0187300f0933f419 d22a17548c3a046636666300c06711f0 761200245149a220b79918b3f38a9a6e 8228425cb39b6466adba9f6f7fe28d76 c1bcf44e19f035f658eef65cb630638f 7aa15d7706cc572c863d65619bd48f77 425ea0844716709b9923117ade41d414 c94f8e581db9274cf1c8bb41fbbd7838 24978c0f9b7125b9ce3e8abe442a6bc7 4bf519790a18a27916c946f503c02b08 0a8550bc5b9b147d581a3f5f763df377 9e1d655c51c2e06aa2062d1f08f34abc 37947ac48403dc0da9af846c7a4caeae 7567bb8fdf625b1a179e6fd6faf35be9 09488cb9
+[*]   SOA ns-cloud-c1.googledomains.com 216.239.32.108
+[*]   NS ns-cloud-c1.googledomains.com 216.239.32.108
+[*]   NS ns-cloud-c1.googledomains.com 2001:4860:4802:32::6c
+[*]   NS ns-cloud-c2.googledomains.com 216.239.34.108
+[*]   NS ns-cloud-c2.googledomains.com 2001:4860:4802:34::6c
+[*]   NS ns-cloud-c3.googledomains.com 216.239.36.108
+[*]   NS ns-cloud-c3.googledomains.com 2001:4860:4802:36::6c
+[*]   NS ns-cloud-c4.googledomains.com 216.239.38.108
+[*]   NS ns-cloud-c4.googledomains.com 2001:4860:4802:38::6c
+[*]   MX aspmx.l.google.com 173.194.206.27
+[*]   MX alt1.aspmx.l.google.com 64.233.186.27
+[*]   MX alt2.aspmx.l.google.com 209.85.202.27
+[*]   MX alt3.aspmx.l.google.com 64.233.184.27
+[*]   MX alt4.aspmx.l.google.com 74.125.128.27
+[*]   MX aspmx.l.google.com 2607:f8b0:400d:c0f::1a
+[*]   MX alt1.aspmx.l.google.com 2800:3f0:4003:c00::1b
+[*]   MX alt2.aspmx.l.google.com 2a00:1450:400b:c00::1b
+[*]   MX alt3.aspmx.l.google.com 2a00:1450:400c:c0b::1b
+[*]   MX alt4.aspmx.l.google.com 2a00:1450:4013:c02::1b
+[*]   A h4cker.org 185.199.109.153
+[*]   SPF v=spf1 include:_spf.google.com ~all
+[*]   TXT h4cker.org v=spf1 include:_spf.google.com ~all
+[*] Enumerating SRV Records
+[+] 0 Records Found
+|--[omar@websploit]--[~]
+|--- $
+```
+A partir de ahí, un atacante puede comenzar a profundizar escaneando los hosts identificados. Una vez que el atacante sabe qué hosts están activos en el sitio de destino, debe determinar qué tipo de servicios están ejecutando los hosts. Para hacer esto, el atacante podría usar la herramienta comprobada como Nmap. Antes de analizar esta herramienta y otras en profundidad, debemos analizar los tipos de escaneo y enumeraciones que debe realizar y por qué. Nmap alguna vez se consideró un simple escáner de puertos; sin embargo, se ha convertido en una herramienta mucho más sólida que puede proporcionar funcionalidades adicionales, gracias al motor de secuencias de comandos de Nmap (NSE).
+
+Puede utilizar otras herramientas DNS básicas, como los comandos nslookup, host y dig para realizar la resolución de nombres y obtener información adicional sobre un dominio
+
+### Uso de Dig para obtener información sobre un dominio determinado
+``` bash
+|--[omar@websploit]--[~]
+|--- $dig h4cker.org
+; <<>> DiG 9.16.6-Debian <<>> h4cker.org
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 6517
+;; flags: qr rd ra ad; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;h4cker.org.                IN     A
+;; ANSWER SECTION:
+h4cker.org.               172     IN       A       185.199.110.153
+h4cker.org.               172     IN       A       185.199.111.153
+h4cker.org.               172     IN       A       185.199.108.153
+h4cker.org.               172     IN       A       185.199.109.153
+;; Query time: 72 msec
+;; SERVER: 208.67.222.222#53(208.67.222.222)
+;; WHEN: Fri Apr 30 20:45:42 EDT 2021
+;; MSG SIZE  rcvd: 103
+
+|--[omar@websploit]--[~]
+|--- $ 
+```
+
+Las líneas con *h4cker.org* muedtran las direcciones IP asociadas. De manera similar, puedes usar el comando *dig [dominio] mx* para obtener los servidores de correo eléctronico utilizados por *h4cker.org* (registro de intercambio de correo [MX]).
+
+### Obtención del registro MX de h4cker.org
+``` bash
+|--[omar@websploit]--[~]
+|--- $dig h4cker.org mx
+
+; <<>> DiG 9.16.6-Debian <<>> h4cker.org mx
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 62903
+;; flags: qr rd ra ad; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;h4cker.org.                IN     MX
+
+;; ANSWER SECTION:
+h4cker.org.   77      IN      MX       1  aspmx.l.google.com.
+h4cker.org.   77      IN      MX       5  alt1.aspmx.l.google.com.
+h4cker.org.   77      IN      MX       5  alt2.aspmx.l.google.com.
+h4cker.org.   77      IN      MX       10 alt3.aspmx.l.google.com.
+h4cker.org.   77      IN      MX       10 alt4.aspmx.l.google.com.
+
+;; Query time: 48 msec
+;; SERVER: 208.67.222.222#53(208.67.222.222)
+;; WHEN: Fri Apr 30 20:47:01 EDT 2021
+;; MSG SIZE  rcvd: 157
+```

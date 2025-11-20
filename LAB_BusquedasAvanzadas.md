@@ -1,0 +1,177 @@
+# Práctica de laboratorio - Búsquedas Avanzadas
+
+__Tarea de soluciones de seguridad de Protego__
+
+Como sabe, la inteligencia de código abierto puede proporcionar mucha información sobre las personas. También puede revelar mucha información sobre sistemas web, servicios y aplicaciones. Las herramientas simples pueden producir resultados valiosos. Realice esta práctica de laboratorio para perfeccionar sus habilidades con las búsquedas avanzadas en Google y el archivo web de Wayback.
+
+Más adelante, usaremos estas herramientas con Pixel Paradise para descubrir información útil que podamos utilizar en las últimas fases de nuestra prueba de penetración.
+En esta laboratorio, utilizaré la búsqueda avanzada de Google para realizar un reconocimiento pasivo
+
+## Objetivos
+Utilizar la búsqueda avanzada de Google par realizar un reconocimiento pasivo
+
+- **Parte 1**: *Búsquedas avanzadas de Google (Dorking)*
+- **Parte 2**: *La base de datos de piratería de Google*
+- **Parte 3:**: *La máquina Wayback*
+
+## Trasfondo / Escenario
+El primer paso que realiza un hacker es obtener la mayor cantidad de información posible sobre un objetivo. Cuanto más sepan los atacantes sobre el objetivo, mejor podrán piratearlo con otras técnicas de hackeo. El uso de búsquedas avanzadas de Google y el escaneo de sitios de Internet archivados son dos métodos populares de reconocimiento pasivo. Ayudan a informar a los hackers éticos sobre las vulnerabilidades de un cliente y allanan el camino para las actividades de explotación si son parte del alcance de la prueba.
+
+A través de una búsqueda avanzada en Google, el hacker espera encontrar información que se haya hecho pública por accidente. Por ejemplo, alguien puede haber expuesto contraseñas accidentalmente, haber dejado una cámara web abierta a Internet o haber revelado otra información útil. El hacker buscará con palabras clave específicas y operadores de búsqueda de Google para intentar encontrar lo que está buscando. Esto se llama dorking Google. Implica el uso de consultas de búsqueda específicas de Google para descubrir información que no estaba destinada a estar disponible públicamente.
+
+El archivo web de la máquina Wayback es otra herramienta útil para descubrir posibles vulnerabilidades. En ocasiones, se puede obtener información personal y corporativa valiosa de las páginas web archivadas. Con la máquina Wayback, un hacker puede navegar por el historial de un sitio web y visitar instantáneas del sitio en varios momentos en el pasado. Esto permite que el hacker descubra información que ya no está disponible en Internet en vivo que puede ser útil para futuros ataques.
+
+El acceso no autorizado a datos, computadoras y sistemas de redes es un delito en muchas jurisdicciones y, a menudo, está acompañado por graves consecuencias, independientemente de qué motive al delincuente. En su carácter de usuario de este material, la responsabilidad del alumno es conocer y cumplir las leyes de uso de las computadoras.
+
+## Recursos necesarios
+- Computadora o dispositivo móvil con acceso a internet
+
+## Parte 1: Búsquedas avanzadas de Google (Dorking)
+
+Para la mayoría de las personas, Google es una herramienta para buscar texto, imágenes, videos y noticias en Internet mediante consultas de cadenas simples. Sin embargo, para algunos, Google es una herramienta de piratería potente y útil y puede utilizarse para realizar reconocimientos pasivos mediante el uso de operadores de búsqueda avanzados. La práctica de utilizar operadores avanzados de búsqueda de Google para encontrar información y servidores vulnerables se denomina dorking de Google o hackeo de Google. Los hackers utilizan el dorking de Google para intentar encontrar información que nunca tuvo la intención de revelarse públicamente. Es una técnica útil para realizar reconocimientos pasivos en pruebas de penetración.
+
+Nota Al realizar consultas avanzadas, es posible que Google le solicite que demuestre que no es un robot. Si esto ocurre, como probablemente ocurrirá después de varias búsquedas, simplemente complete el captcha y continúe.
+
+__Paso 1: Explorar Google Dorking__
+
+- Vaya a *www.google.com* para abrir el motor de búsqueda de Google.
+- Escriba la cadena de consulta ethical hacker en la ventana de búsqueda. Desplazarse por los resultados.
+- Tenga en cuenta la variedad de resultados devueltos. Así es como solemos utilizar Google para realizar búsquedas. Las consultas de cadenas como esta devuelven muchos resultados. Sin embargo, alrededor del 90% de los resultados no son específicos de lo que buscamos. Para restringir los resultados a lo que se desea, como páginas de un único sitio, palabras clave específicas o tipos de archivos específicos, se pueden utilizar los operadores de búsqueda avanzada de Google.
+- Hay muchos operadores de búsqueda avanzada de Google. Hay listas disponibles en Internet en sitios como SpyFu. Busque en Internet *“operadores de búsqueda avanzada”* para ver otras fuentes de información, algunas de las cuales tienen ejemplos útiles.
+
+La siguiente tabla muestra los operadores de búsqueda avanzada que se utilizan en esta práctica de laboratorio
+
+| Operador          | Descripción                                                                                                           |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------|
+| allintext:        | Restringe los resultados a las páginas con todas las palabras de la consulta en el texto de la página.                |
+| filetype:         | Restringe los resultados a las páginas del tipo de archivo especificado (.pdf, .pptx, .docx, etc.)                    |
+| intitle:          | Restringe los resultados a las páginas con una determinada palabra (o palabras) en el título                          |
+| inurl:            | Restringe los resultados a las páginas con una determinada palabra (o palabras) en la URL                             |
+| site:             | Restringe los resultados a las páginas del dominio especificado                                                       |
+
+- Escriba *ethical hacker intitle:certification* en la ventana de búsqueda. Desplazarse por los resultados.
+Todos los resultados deben estar relacionados con la piratería ética e incluir la palabra clave certification en el título de la página.
+
+- Escriba *ethical hacker inurl:free* en la ventana de búsqueda. Desplazarse por los resultados.
+Todos los resultados deben estar relacionados con la piratería ética y deben tener la palabra clave free en la URL.
+
+- Escriba *allintext:free ethical hacker practice test questions* en la ventana de búsqueda. Esto realiza prácticamente la misma función que una búsqueda normal de Google, pero solo devuelve resultados con cada palabra clave en el texto de la página. No devolverá resultados con las palabras clave solo en el título. Pruebe colocar el texto de búsqueda entre comillas.
+Los resultados deben incluir todas las palabras clave del texto de la página.
+
+__Paso 2: Realice búsquedas mediante el formulario de búsqueda avanzada de Google__
+El formulario de búsqueda avanzada de Google ofrece la misma funcionalidad de filtrado de resultados que los operadores de texto comunes.
+
+Escriba búsqueda avanzada en la ventana de búsqueda de Google. Esto devolverá un enlace al formulario de búsqueda avanzada.
+Utilice el formulario de búsqueda avanzada para realizar las mismas búsquedas que en el paso anterior.
+
+__Paso 3: Realice un reconocimiento pasivo con operadores de búsqueda avanzada__
+
+Los operadores de búsqueda avanzada son útiles para delimitar los resultados de la búsqueda. Esto los hace útiles también para realizar reconocimientos pasivos. Los hackers utilizarán operadores de búsqueda avanzada para encontrar vulnerabilidades e información sobre objetivos potenciales. Si bien los resultados de las búsquedas pueden parecer inofensivos por sí solos, pueden proporcionar inteligencia valiosa a un hacker. El hacker espera encontrar sitios o archivos que la empresa objetivo no tenía la intención de hacer públicos, o encontrar información que pueda utilizarse para futuros ataques, como ataques de ingeniería social.
+
+Al realizar estas búsquedas, utilice una empresa objetivo de su elección. El reconocimiento pasivo es legal, pero se detiene allí porque el uso de cualquier información que descubra para el reconocimiento activo no lo es. Si encuentra vulnerabilidades, considere informar a la empresa para que puedan corregir el problema.
+
+- Busque en el sitio de la empresa de destino con el operador *inurl:*.
+En la ventana de búsqueda, escriba el comando *site:examplecompany.com inurl:admin* y reemplace examplecompany.com con una empresa de su elección.
+
+Esto devolverá páginas que tengan la palabra clave admin en algún lugar dentro de la URL.
+
+Revise las páginas devueltas y haga clic en algunas para ver si hay información interesante.
+
+- Realice otra búsqueda, esta vez con el operador *intitle:*.
+En la ventana de búsqueda, escriba el comando *site:examplecompany.com intitle:login*.
+
+Esto devolverá páginas que tienen la palabra clave *login* en el título. Nuevamente, revise los resultados y haga clic en algunos para ver si hay información interesante.
+
+- A continuación, intente utilizar el operador *filetype:*.
+En la ventana de búsqueda, escriba el comando *site:examplecompany.com filetype:pdf*.
+
+Esto devolverá archivos PDF. Revise algunos archivos para ver si hay información interesante que no esté destinada al acceso público o sea útil para ataques de ingeniería social.
+
+- Pruebe una búsqueda con varios operadores. Utilice los operadores *intext:* y *filetype:*. En la ventana de búsqueda, escriba el comando *site:examplecompany.com intext:employee filetype:pdf*
+Esto devolverá páginas PDF que contienen el texto employee (empleado).
+
+- Experimente con *site:examplecompany.com intext: filetype*: con diferentes palabras clave y diferentes tipos de archivo.
+- LinkedIn puede ofrecer información valiosa sobre una empresa y sus empleados. En la ventana de búsqueda, escriba el comando *site:linkedin.com intitle:example company*. Experimente buscando el nombre de la empresa con y sin .com al final.
+
+## Parte 2: La base de datos de piratería de Google
+La base de datos de piratería de Google (GHDB) es un índice de dorks (de Dorking) creados por usuarios que están diseñados para descubrir información interesante y potencialmente confidencial que involuntariamente se puso a disposición del público en Internet.
+
+__Paso 1: Explora la página principal de la base de datos de piratería de Google__
+
+- Realiza una búsqueda en Google de GHDB. La primera página debe ser la base de datos de piratería informática de Google.
+- En la página principal de GHDB, haz clic en el botón *Filters* en la parte superior derecha de la ventana.
+Esto permite filtrar los resultados de la base de datos por categoría o autor. También hay una *Búsqueda rápida*
+
+__Paso 2: Usa la búsqueda rápida para encontrar dorks específicos__
+- Selecciona cada una de las categorías de filtros y observa algunos de los disponibles en esa categoría. Selecciona algunos interesantes en los resultados y observa las descripciones de cada uno.
+- Inicia algunos de los dorks que te parezcan interesantes y ve qué resultados se devuelven y el tipo de información que estos resultados pueden proporcionar a un hacker.
+
+__Paso 3: Selecciona las categorías para encontrar Dorks interesantes__
+- Realiza una búsqueda de *tsweb*
+- Haz clic en *allinurl:tsweb/default.htm* Dork
+- Haz clic en algunas de las páginas devueltas. Además de los campos para las credenciales de inicio de sesión, es posible que veas información interesante que un hacker podría aprovechar. Por ejemplo, mira la figura. El servidor de servicios de Terminal Server ejecuta Windows 2000. Sabiendo esto, un hacker puede centrarse en las vulnerabilidades de Windows 2000. Dado que Windows 2000 finalizó su vida útil en 2010, puede ser vulnerable.
+
+<img src="Imagenes/TSWeb.jpeg" width="750" height="375" style="border-radius:10px;">
+
+__Paso 4: Combina filtros de categoría con términos de búsqueda__
+
+Puedes combinar filtros de categorías con términos de búsqueda para refinar y filtrar los resultados según información específica.
+- Selecciona *Files containing passwords* en el menú *Categories*.
+- En la ventana *Quick Search*, escribe *db_pass*. Esto devolverá búsquedas de contraseñas de la base de datos.
+
+Explora algunos de los resultados de búsqueda y vea la información interesante que revelan.
+
+## Parte 3: La máquina Wayback
+La seguridad de los sitios web ha evolucionado a lo largo de las décadas. Sitios web utilizados para publicar información que ya no se considera segura. Los archivos de las páginas web pueden revelar información interesante que ya no está disponible. La máquina Wayback (en español sería como Hace mucho tiempo) es una herramienta útil para recopilar pasivamente información sobre un objetivo que podría usarse en ingeniería social u otros ataques. La máquina Wayback es un archivo de Internet completo. Accede a todos los sitios web y los rastrea mientras toma capturas de pantalla y registra los datos en una base de datos. Estos terminales se pueden consultar para obtener todas las rutas que el sitio haya rastreado.
+
+__Paso 1: Explora la base de datos de Wayback Machine__
+- Navega a https://web.archive.org para abrir la página de inicio de Wayback.
+- Ingrese la URL de una empresa objetivo en el cuadro de búsqueda.
+
+__Paso 2: Explora la pestaña Calendario__
+- Haz clic en la pestaña *Calendario*
+
+En la parte superior de la página hay un gráfico que muestra cuántas veces el sitio web ha sido rastreado por Wayback y un calendario en la parte inferior que muestra el día en que se creó la entrada del archivo. Puede hacer clic en ellos para abrir instantáneas del pasado.
+
+- Selecciona un año y una fecha para una instantánea en el calendario. Algunas fechas pueden tener más de una instantánea. Haz clic en una instantánea para abrir la página web lograda. Según el sitio, es posible que pueda navegar por la página como si estuviera activa y ver toda la información fechada.
+
+__Paso 3: Explora la pestaña Colecciones__
+- Haz clic en la ficha *Colecciones*
+- Esto proporciona archivos organizados por fuente. Las colleciones que rastrearon la página están en la columna de la izquierda. Los meses de enero a diciembre muestran cuándo se rastreó con el tiempo. Haz clic en algunas de las colecciones para obtener más información sobre las colecciones y quién las administra.
+
+__Paso 4: Explora la pestaña Changes (Cambios)__
+- Haz clic en la pestaña *Cambios*.
+Esto muestra cuánto ha cambiado la página con el tiempo.
+- *Gris*: No ha cambiado mucho desde el último rastreo.
+- *Azul*: Cambios significativos.
+También puedes comparar los cambios de dos caputras para ver qué ha cambiado.
+- Selecciona dos capturas. Pueden ser del mismo día o diferentes. Haz clic en el botón *Compare*. Las cosas que hayan cambiado se resaltarán.
+
+__Paso 5: Explora la pestaña Summary (Resumen)__
+- Haz clic en la ficha *Summary*.
+El resumen se aplica a todo el dominio, mientras que el calendario, las colecciones y los cambios son específicos de la URL (una sola página)buscada. Esta página muestra el tipo MIME del contenido alojado por el dominio en el rango de fechas especificado. Puede ser texto, imágenes, JavaScript, etc.
+- Haz clic en la flecha de la lista desplegable en el cuadro desplegable *Tipos de MIME* y revisa los tipos de archivo disponibles.
+- Cambia *Inicio de año* y *Fin de año* para ver cómo han cambiado las cosas durante un periodo.
+- Haz clic en cada uno de los botones de tipos de datos: Todo, texto, aplicación, imagen, mensaje, audio, video y explora la información revelada.
+
+__Paso 6: Explora la pestaña Site Map (Mapa del sitio)__
+- Haz clic en la pestaña *Site Map*.
+El mapa del sitio también se aplica a todo el dominio. El círculo central es la "raíz" y todos los anillos que rodean el círculo central son las diversas páginas o árboles del sitio web. Cuanto más lejos de la raíz, más compleja es la página.
+- Haz clic en los años para ver en el gráfico cómo ha cambiado la complejidad del sitio con el tiempo.
+- Haz clic en los anillos y las celdas del gráfico para abrir las páginas archivadas. Los datos de las páginas archivadas se pueden utilizar para encontrar vulnerabilidades.
+
+__Paso 7: Explora la pestaña URL__
+- Haz clic en la pestaña URL
+Esto muestra todas las URL que contienen el prefijo de dominio.
+- Utiliza el cuadro de filtro a la derecha de la página para buscar archivos específicos, como cualquier cosa que termine en "*.bak*", para ver si contienen información de respaldo interesante.
+**Nota**: Según el sitio buscado, esto puede devolver o no cualquier contenido.
+- Experimenta con otros filtros. Algunos pueden devolver contenido, otros no. Además, experimenta con estos filtros en diferentes dominios. Algunos filtros para probar:
+- *.zip*
+- *.backup*
+- *.config*
+- *.csv*
+- *.pdf*
+- _/api/_
+- _/admin/_
+
+No solo se puede encontrar archivos interesantes buscando en los archivos de Wayback, sino que una inspección cuidadosa de los datos puede conducir a posibles vulnerabilidades.

@@ -1,0 +1,397 @@
+# Búsquedas de DNS
+
+## Objetivos
+El reconocimiento pasivo es un método de recopilación de información en el que las herramientas no interactúan directamente con el dispositivo o la red de destino. En esta práctica de laboratorio, explorará herramientas comunes utilizadas para recopilar información sobre un objetivo a través del Sistema de nombres de dominio (DNS).
+
+- Utilice nslookup para obtener información de dominio y dirección IP.
+- Utilice el comando whois para encontrar información de registro adicional.
+- Compare el resultado de las herramientas Nslookup y Dig.
+- Realizar búsquedas DNS inversas.
+
+## Trasfondo / Escenario
+Antes de comenzar cualquier prueba de penetración u otro compromiso de piratería ética, debe obtener de manera encubierta tanta información sobre la organización objetivo. Existe una gran cantidad de información que se puede obtener a partir de los datos de registro de dominios disponibles públicamente. En esta práctica de laboratorio, investigará el resultado de los comandos *nslookup*, *whois* y *dig*.
+
+## Recursos necesarios
+- Curso Kali VM personalizado para hacker ético
+- Acceso a internet
+
+## Parte 1: Utiliza *nslookup* para obtener información de dominio y dirección IP
+
+__Paso 1: Accede al entorno de la terminal__
+- Abre una ventana de terminal haciendo clic en el ícono *Terminal* 
+
+__Paso 2: Investigación de las capacidades de *nslookup*__
+*nslookup* es una herramienta de línea de comandos disponible en Linux y Windows. Su uso básico es convertir un nombre de dominio en una dirección IP. *nslookup* tiene otra funcionalidad que puede proporcionar información adicional.
+- Accede a las páginas del manual de *nslookup* con el comando *man*:
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ man nslookup
+```
+- Para revisar las páginas del manual, presiona la barra espaciadora para avanzar las páginas. Cuando hayas terminado de revisar las páginas del manual, presiona *q* para salir y volver a la línea de comando.
+
+__Paso 3: Utilizar el comando nslookup__
+- Utiliza el comando *nslookup* para ingresar al modo interactivo. Para salir del modo interactivo en cualquier momento, escribe *exit* para volver al indicador de la CLI.
+- El indicador de la CLI cambia a _>_ para indicar que ahora está en modo interactivo y puede ingresar los diversos comandos de *nslookup*. Ingresa el nombre de dominio *cisco.com* para resolver el nombre de dominio en una dirección IP. De manera predeterminada, el comando *nslookup* consulta los registros A y AAAA del destino.
+```bash
+> cisco.com
+``` 
+La salida del comando será similar a la que se muestra. El registro A contiene la dirección IPv4 asignada al dominio raíz y el registro AAAA contiene la dirección IPv6.
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ nslookup
+> cisco.com
+Server:         10.0.2.3
+Address:        10.0.2.3#53
+
+Non-authoritative answer:
+Name:   cisco.com
+Address: 72.163.4.185
+Name:   cisco.com
+Address: 2001:420:1101:1::185
+> 
+```
+- Para encontrar los servidores de nombres de dominio configurados para cisco.com, usa el comando *set type* para cambiar el tipo de consulta a *"ns"* para devolver la información del servidor de nombres
+```bash
+> set type=ns
+> cisco.com
+;; communications error to 10.0.2.3#53: timed out
+Server:         10.0.2.3
+Address:        10.0.2.3#53
+
+Non-authoritative answer:
+cisco.com       nameserver = a28-64.akam.net.
+cisco.com       nameserver = ns2.cisco.com.
+cisco.com       nameserver = ns1.cisco.com.
+cisco.com       nameserver = ns3.cisco.com.
+cisco.com       nameserver = a3-64.akam.net.
+
+Authoritative answers can be found from:
+> 
+```
+- Introduce *exit* para salir del modo interactivo y volver al indicador de la CLI.
+
+__Paso 4: Cambia el servidor utilizado para realizar las búsquedas__
+
+Ocasionalmente, es conveniente utilizar un servidor DNS diferente para realizar búsquedas. Esto puede ser necesario si el servidor DNS local no puede resolver una dirección o resuelve el nombre de host en una dirección privada interna y necesita obtener la dirección accesible de Internet del host.
+
+- En esta consulta, usa la sintaxis del comando de una línea *nslookup* para cambiar el servidor y buscar *netacad.com* . La sintaxis del comando es __*nslookup [nombre del host][IP del servidor]*__.
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ nslookup netacad.com 8.8.8.8
+Server:         8.8.8.8
+Address:        8.8.8.8#53
+
+Non-authoritative answer:
+Name:   netacad.com
+Address: 100.28.78.97
+Name:   netacad.com
+Address: 52.5.186.247
+```
+- En el modo interactivo, se cambia el servidor con la palabra *server*
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ nslookup
+> server 8.8.8.8
+Default server: 8.8.8.8
+Address: 8.8.8.8#53
+```
+- El tipo de consulta any puede recuperar gran parte o toda la información contenida en el registro DNS para un nombre de host. A menudo, los registros de text (texto) que pueden proporcionar detalles adicionales sobre el dominio se encuentran en los registros de DNS. Con el servidor DNS de Google 8.8.8.8, busque los registros DNS de netacad.com.
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ nslookup                                                               
+> server 8.8.8.8
+Default server: 8.8.8.8
+Address: 8.8.8.8#53
+> set type=any
+> netacad.com
+```
+<!-- Resultado -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ nslookup                                                               
+> server 8.8.8.8
+Default server: 8.8.8.8
+Address: 8.8.8.8#53
+> set type=any
+> netacad.com
+;; Connection to 8.8.8.8#53(8.8.8.8) for netacad.com failed: timed out.
+Server:         8.8.8.8
+Address:        8.8.8.8#53
+
+Non-authoritative answer:
+netacad.com     text = "google-site-verification=TxuIwljruI4G9oKaeL5KB7LvXjIRJg2vOiy8RKy02Ak"
+netacad.com     text = "google-site-verification=g7CVgKXjcGaA02xXIzPksT9HPpA9_LY0_UabO_DRTgc"
+netacad.com     text = "identrust_validate=GHH1lQD22HMNen8L8V2x96QqwXOWYA8Y7Tu58KT1JnGv"
+netacad.com     text = "v=spf1 include:_spf.google.com include:amazonses.com ~all"
+netacad.com     text = "5c9ty312qzlq7yyvly7mmk11nrfpp6kn"
+netacad.com     text = "93hd7nffv5d7h3vbwrc14q6n5cjkjbc2"
+netacad.com     text = "facebook-domain-verification=9a8xflw2lo4qxwm9cq3rk3d0etc8bu"
+netacad.com     nameserver = ns-1911.awsdns-46.co.uk.
+netacad.com     nameserver = ns-240.awsdns-30.com.
+netacad.com     nameserver = ns-748.awsdns-29.net.
+netacad.com     nameserver = ns-1476.awsdns-56.org.
+netacad.com
+        origin = ns-1476.awsdns-56.org
+        mail addr = awsdns-hostmaster.amazon.com
+        serial = 1
+        refresh = 7200
+        retry = 900
+        expire = 1209600
+        minimum = 86400
+Name:   netacad.com
+Address: 100.28.78.97
+Name:   netacad.com
+Address: 52.5.186.247
+netacad.com     mail exchanger = 20 alt1.aspmx.l.google.com.
+netacad.com     mail exchanger = 20 alt2.aspmx.l.google.com.
+netacad.com     mail exchanger = 30 aspmx2.googlemail.com.
+netacad.com     mail exchanger = 30 aspmx3.googlemail.com.
+netacad.com     mail exchanger = 10 aspmx.l.google.com.
+
+Authoritative answers can be found from:
+ns-1476.awsdns-56.org   internet address = 205.251.197.196
+ns-1476.awsdns-56.org   has AAAA address 2600:9000:5305:c400::1
+ns-1911.awsdns-46.co.uk internet address = 205.251.199.119
+ns-1911.awsdns-46.co.uk has AAAA address 2600:9000:5307:7700::1
+ns-240.awsdns-30.com    internet address = 205.251.192.240
+ns-240.awsdns-30.com    has AAAA address 2600:9000:5300:f000::1
+ns-748.awsdns-29.net    internet address = 205.251.194.236
+ns-748.awsdns-29.net    has AAAA address 2600:9000:5302:ec00::1
+> 
+```
+## Parte 2: Usar la función *Whois* para obtener información del dominio
+La herramienta whois consulta la información de registro de dominio, en lugar de los registros del servidor DNS. Es otra forma de reconocimiento pasivo que puede identificar dónde está registrado el dominio, información de contacto técnica y administrativa y ubicaciones físicas. Tenga en cuenta que la información contenida en los registros de dominio se puede configurar como privada y, a menudo, la información de contacto es la del servicio de alojamiento, en lugar de la organización en sí.
+
+__Paso 1: Compara el resultado de whois de varias organizaciones__
+- La herramienta whois está disponible desde el indicador CLI en Kali Linux. Utiliza el comando whois para obtener información sobre cisco.com
+```bash
+```
+
+__Paso 2: Utiliza whois para determinar la información de registro de la dirección IP__
+
+La herramienta Whois también se puede utilizar para recopilar información sobre los rangos de direcciones IP asignados a una organización. En la parte anterior de esta práctica de laboratorio, descubrimos las direcciones IP asignadas a varios nombres de host de servidores DNS de dominio. Ahora puede usar esa información de dirección para obtener detalles adicionales sobre los rangos de direcciones IP externas que se asignan a esas organizaciones.
+
+- Revise el resultado que obtuvo al usar nslookup para obtener las direcciones IP del servidor DNS para cisco.com. Registre las direcciones IP de los servidores DNS de Cisco.
+- Use la herramienta Whois para encontrar qué rangos de direcciones IP están asignados a Cisco y se utilizan en las redes que alojan sus servidores DNS. En el momento de esta práctica de laboratorio, ns1.cisco.com se resolvía con la dirección IP 72.163.5.201; sin embargo, esto puede variar. Cuando se le solicite, ingrese *whois 72.163.5.201*.
+```bash
+┌──(kali㉿Kali)-[~]                                                             
+└─$ whois cisco.com
+```
+- Debido a que las organizaciones pueden usar las mismas redes IP para otros servidores externos, conocer los rangos de direcciones es valioso para determinar a qué redes apuntar durante una prueba de penetración. Utilice la herramienta whois para obtener las asignaciones de direcciones IP para las redes IP donde se encuentran los otros servidores DNS de Cisco.
+
+## Parte 3: Comparar el resultado de las funciones NSlookup y Dig
+
+__Paso 1: Utiliza Linux Dig para consultar servidores DNS__
+- Dig es una función de Linux que realiza consultas al DNS. El formato de una consulta Dig es similar a la de Nslookup. Para resolver el nombre de host cisco.com en una dirección IP, utiliza la sintaxis __*dig [nombre del host]*__
+<!-- dig cisco.com -->
+```bash
+──(kali㉿Kali)-[~]
+└─$ dig cisco.com                                                                      
+
+; <<>> DiG 9.18.16-1-Debian <<>> cisco.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 33217
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;cisco.com.                     IN      A
+
+;; ANSWER SECTION:
+cisco.com.              897     IN      A       72.163.4.185
+
+;; Query time: 24 msec
+;; SERVER: 10.0.2.3#53(10.0.2.3) (UDP)
+;; WHEN: Sat Nov 15 04:06:43 UTC 2025
+;; MSG SIZE  rcvd: 54
+```
+- Para obtener la dirección IPv6 de cisco.com, es necesario agregar un tipo a la estructura de comando. La sintaxis para indicar a Dig que consulte un tipo de registro específico es __*dig [hostname][record type]*__.
+<!-- dig cisco.com AAAA -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ dig cisco.com AAAA                                                                 
+
+; <<>> DiG 9.18.16-1-Debian <<>> cisco.com AAAA
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 54778
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;cisco.com.                     IN      AAAA
+
+;; ANSWER SECTION:
+cisco.com.              611     IN      AAAA    2001:420:1101:1::185
+
+;; Query time: 24 msec
+;; SERVER: 10.0.2.3#53(10.0.2.3) (UDP)
+;; WHEN: Sat Nov 15 04:08:09 UTC 2025
+;; MSG SIZE  rcvd: 66
+```
+__Paso 2: Utiliza Dig para obtener información adicional__
+- En la primera parte de esta práctica de laboratorio, se utilizó nslookup para obtener los servidores DNS para cisco.com. Utilice el servidor DNS de Google 8.8.8.8 para consultar los registros del servidor DNS. La sintaxis para utilizar un comando dig para realizar una consulta con un servidor DNS diferente es dig [nombre de host] @ [IP del servidor DNS] [tipo]. En la línea de comandos, ingrese *dig cisco.com 8.8.8.8 ns*.
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ dig cisco.com 8.8.8.8 ns
+
+; <<>> DiG 9.18.16-1-Debian <<>> cisco.com 8.8.8.8 ns
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 2414
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;cisco.com.                     IN      A
+
+;; ANSWER SECTION:
+cisco.com.              751     IN      A       72.163.4.185
+
+;; Query time: 40 msec
+;; SERVER: 10.0.2.3#53(10.0.2.3) (UDP)
+;; WHEN: Sat Nov 15 04:09:09 UTC 2025
+;; MSG SIZE  rcvd: 54
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 10089
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;8.8.8.8.                       IN      NS
+
+;; AUTHORITY SECTION:
+.                       4764    IN      SOA     a.root-servers.net. nstld.verisign-grs.com. 2025111402 1800 900 604800 86400
+
+;; Query time: 12 msec
+;; SERVER: 10.0.2.3#53(10.0.2.3) (UDP)
+;; WHEN: Sat Nov 15 04:09:09 UTC 2025
+;; MSG SIZE  rcvd: 111
+```
+- Anteriormente, nslookup se usaba con la opción *set type=any* para encontrar información adicional sobre el nombre de host de netacad.com. El tipo de registro *any* también se puede consultar mediante Dig
+<!-- dig netacad.com any -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ dig netacad.com any                                                                
+
+; <<>> DiG 9.18.16-1-Debian <<>> netacad.com any
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 30426
+;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 9
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;netacad.com.                   IN      ANY
+
+;; ANSWER SECTION:
+netacad.com.            171936  IN      NS      ns-240.awsdns-30.com.
+netacad.com.            171936  IN      NS      ns-748.awsdns-29.net.
+netacad.com.            171936  IN      NS      ns-1476.awsdns-56.org.
+netacad.com.            171936  IN      NS      ns-1911.awsdns-46.co.uk.
+netacad.com.            36      IN      SOA     ns-1476.awsdns-56.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400
+
+;; ADDITIONAL SECTION:
+ns-1476.awsdns-56.org.  128309  IN      A       205.251.197.196
+ns-1476.awsdns-56.org.  131112  IN      AAAA    2600:9000:5305:c400::1
+ns-1911.awsdns-46.co.uk. 127665 IN      A       205.251.199.119
+ns-1911.awsdns-46.co.uk. 131716 IN      AAAA    2600:9000:5307:7700::1
+ns-240.awsdns-30.com.   127520  IN      A       205.251.192.240
+ns-240.awsdns-30.com.   130201  IN      AAAA    2600:9000:5300:f000::1
+ns-748.awsdns-29.net.   126059  IN      A       205.251.194.236
+ns-748.awsdns-29.net.   127124  IN      AAAA    2600:9000:5302:ec00::1
+
+;; Query time: 24 msec
+;; SERVER: 10.0.2.3#53(10.0.2.3) (TCP)
+;; WHEN: Sat Nov 15 04:09:34 UTC 2025
+;; MSG SIZE  rcvd: 414
+```
+## Parte 4: Realizar búsquedas de DNS inversas
+__Paso 1: Utilizar Dig para realizar búsquedas de rDNS__
+
+Ahora que puede realizar búsquedas de DNS y usar Whois para determinar rangos de direcciones IP, use Dig para buscar nombres de host adicionales. Las búsquedas de DNS inverso (rDNS) utilizan la dirección IP para consultar los nombres de host de los servicios que se resuelven en esa dirección.
+
+- Introduce el comando *dig* con la opción *-x* para recuperar el nombre de host y el tipo de registro del servidor DNS ns1.cisco.com **(72.163.5.201)**.
+<!-- dig -x 72.163.5.201 -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ dig -x 72.163.5.201
+
+; <<>> DiG 9.18.16-1-Debian <<>> -x 72.163.5.201
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 44680
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;201.5.163.72.in-addr.arpa.     IN      PTR
+
+;; ANSWER SECTION:
+201.5.163.72.in-addr.arpa. 1800 IN      PTR     ns1.cisco.com.
+
+;; Query time: 87 msec
+;; SERVER: 10.0.2.3#53(10.0.2.3) (UDP)
+;; WHEN: Sat Nov 15 04:10:12 UTC 2025
+;; MSG SIZE  rcvd: 81
+
+```
+
+__Paso 2: Usar la utilidad de host para realizar búsquedas de rDNS__
+
+La utilidad Host es una función en Linux que realiza búsquedas para convertir direcciones IP en nombres de host. Utilice esta utilidad para buscar otro host en la red 72.163.0.0/16.
+- La sintaxis del comando *host* es *host [dirección IP o hostname]*
+<!-- host 72.163.10.1 -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ host 72.163.10.1
+1.10.163.72.in-addr.arpa domain name pointer hsrp-72-163-10-1.cisco.com.
+```
+- El host también se puede utilizar para realizar una búsqueda rápida de direcciones IP para un nombre de host conocido.
+<!-- host hsrp-72-163-10-1.cisco.com -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ host hsrp-72-163-10-1.cisco.com                                                    
+hsrp-72-163-10-1.cisco.com has address 72.163.10.1
+```
+- Las URL a menudo contienen alias para el nombre de host del servidor que aloja el sitio web. La salida del comando host puede enumerar los servidores que responden a esa URL.
+<!-- host hsrp-72-163-10-1.cisco.com -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ host hsrp-72-163-10-1.cisco.com                                                    
+hsrp-72-163-10-1.cisco.com has address 72.163.10.1
+```
+__Paso 3: Utiliza nslookup para realizar búsquedas de rDNS__
+
+Nslookup se usa principalmente para realizar búsquedas de direcciones IP para nombres de host conocidos. También se puede utilizar para realizar búsquedas de rDNS para devolver un nombre de host asignado a una dirección IP conocida.
+Utilice Nslookup para encontrar nombres de host asociados con una dirección IP.
+
+En el modo no interactivo, la sintaxis para realizar una consulta rDNS es *nslookup [dirección IP]*.
+<!-- nslookup 72.163.5.201 -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ nslookup 72.163.5.201                                                              
+201.5.163.72.in-addr.arpa       name = ns1.cisco.com.
+
+Authoritative answers can be found from:
+```
+Para usar el modo interactivo, ingresa *nslookup* sin opciones. En el indicador _>_, introduce la dirección IP de destino.
+<!-- > 72.163.5.201 -->
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ nslookup                                                                           
+> 72.163.5.201
+;; communications error to 10.0.2.3#53: timed out
+201.5.163.72.in-addr.arpa       name = ns1.cisco.com.
+
+Authoritative answers can be found from:
+>
+```

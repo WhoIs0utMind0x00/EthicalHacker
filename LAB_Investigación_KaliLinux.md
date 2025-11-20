@@ -1,0 +1,300 @@
+# Práctica de laboratorio — Investigación de Kali Linux
+
+## Objetivos
+En esta práctica de laboratorio se cumplirán los siguientes objetivos:
+- Familiarizarse con la GUI de Kali Linux
+- Familiarizarse con el ambiente de Kali Linux
+
+## Trasfondo / Escenario
+Linux es de código abierto, rápido, confiable y pequeño. Requiere muy pocos recursos de hardware para ejecutarse y tiene muchas opciones para ser personalizado. A diferencia de otros sistemas operativos, como Windows y Mac OS X, Linux fue creado por una comunidad de programadores que actualmente lo mantiene vigente. Linux es parte de varias plataformas y puede encontrarse en cualquier tipo de dispositivo, desde relojes a supercomputadoras. Dado que Linux es de código abierto, cualquier persona o empresa puede obtener el código fuente del kernel, examinarlo, modificarlo y volver a compilarlo cuando lo desean. También pueden redistribuir el programa con o sin costo.
+
+Las distribuciones de Linux son paquetes creados por diferentes organizaciones. Las distribuciones de Linux (o distros) incluyen el kernel de Linux con herramientas y paquetes de software personalizados. Si bien algunas de estas organizaciones pueden cobrar por su soporte de distribución de Linux (orientado a empresas basadas en Linux), la mayoría de ellas también ofrecen su distribución de forma gratuita sin soporte. Debian, Red Hat, Ubuntu, CentOS y SUSE son solo algunos ejemplos de distribuciones de Linux.
+
+Kali Linux es una versión especial de Linux diseñada específicamente para auditorías de seguridad y pruebas de penetración. Se han implementado muchos cambios para garantizar la seguridad, la integridad del sistema y las capacidades específicas de seguridad. No se recomienda utilizar Kali para usos estándar, como juegos, desarrollo y otros usos diarios. Como experto en seguridad y pruebas de penetración, es muy importante que sepa cómo moverse en Kali, tanto en la GUI como en la terminal. Debe poder encontrar las herramientas que necesita para realizar su trabajo y manipular archivos en el sistema de archivos.
+
+## Recursos necesarios
+- Curso Kali VM personalizado para Hacker ético
+- Acceso a Internet
+
+## Instrucciones
+
+### Parte 1: Familiarizarse con la GUI de Kali Linux
+
+__Paso 1: Inicia la Vm y obten información sobre la GUI de Kali__
+
+Los sistemas operativos modernos usan una interfaz con la que la mayoría de las personas está familiarizada, pero hay cosas que solo se pueden completar desde la línea de comandos. Aún es muy importante que conozca la GUI.
+- Inicia sesión en el sistema Kali con el nombre de usuario *kali* y contraseña *kali*.
+
+Al igual que el escritorio de Windows, Kali tiene iconos que representan elementos como la papelera, el explorador de archivos y otros enlaces. También hay varios iconos en la parte superior, como la barra de tareas de Windows. Además, aparecerán iconos para ejecutar aplicaciones. Esto se denomina panel. Desde aquí, puede iniciar el navegador web Firefox, los terminales y también configurar escritorios adicionales utilizando los botones numerados. Cada escritorio se puede configurar de manera diferente con enlaces y archivos específicos. Esto es útil si normalmente tiene conjuntos de herramientas y archivos que utiliza para tareas específicas. Puede cambiar al escritorio que tiene los elementos que necesita cuando trabaja en un determinado trabajo.
+
+- Haz clic con el botón derecho en el panel, haz clic en *Panel > + Add New Items...*
+
+Aquí puede agregar muchos elementos al panel para ayudarlo a acceder a las herramientas y configuraciones que más utiliza. Cierre la ventana Agregar nuevos elementos (Add New Items).
+
+- Haz clic con el botón derecho en el panel, haz clic en *Panel > Panel Preferences...*
+
+Aquí puede modificar muchas configuraciones para personalizar cómo funciona el panel y su apariencia. También se pueden agregar paneles adicionales para acomodar más elementos.
+
+- Investiga la configuración y cámbiala si deseas.
+- Cierra ambas ventanas de configuración cuando hayas terminado.
+
+La esquina superior derecha muestra algunas configuraciones e información, como la conexión de red, el audio, la fecha y la hora, y el botón de encendido. Puede agregar elementos adicionales a esta área mediante la configuración del panel si lo desea. Este es un buen lugar para buscar información útil.
+
+__Paso 2: Navega por el menú Aplicaciones__
+
+- Haz clic en el primer ícono en el lado izquierdo del panel
+
+Esto abre el menú Aplicaciones. Al igual que el botón Inicio de Windows, este menú contiene accesos directos a las aplicaciones y configuraciones del sistema operativo. Desde aquí, puede navegar hasta cualquiera de las herramientas que se han instalado, encontrar la configuración del sistema operativo y buscar lo que esté buscando. Todas las herramientas de esta máquina virtual están organizadas por tipo, como ataques inalámbricos o análisis de vulnerabilidades. Estos grupos facilitan la búsqueda de una aplicación específica para una funcionalidad.
+
+- Navega por las carpetas y observa las diferentes herramientas. Abre algunos si deseas verlos. Ten en cuenta que algunas herramientas tiene GUI, pero la mayoría se abren en una ventana de terminal.
+- Cierra las ventanas abiertas y haz clic en el ícono cuadrado en blanco y negro del panel. Esto abrirá una terminal para la siguiente práctica de laboratorio.
+
+### Parte 2: Familiarizarse con ambiente de Kali para Linux
+
+shell es el término que se utiliza para hacer referencia al intérprete de comandos de Linux. También conocido como terminal, línea de comandos o símbolo del sistema, el ambiente o shell es una forma muy poderosa de interactuar con una computadora Linux.
+
+Los comandos de Linux son programas creados para realizar una tarea específica. Use el comando man (abreviatura de manual) para obtener documentación sobre comandos. Por ejemplo, el comando man ls proporciona documentación sobre el comando ls del manual del usuario.
+
+
+<!-- [PASO 1] -->
+__Paso 1: Documentación del comando__
+- Para obtener más información sobre la página del manual, abre la terminal y escribe 
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$  man man
+```
+- Escribe **q** para salir de la página **man**
+
+Para invocar un comando en el shell, simplemente escribe su nombre. El shell intentará encontrarlo en la ruta del sistema y lo ejecutará.
+
+Esta tabla muestra comandos básicos de Linux y sus funciones
+
+#### Comandos de Linux
+| Comando   | Descripción                                                                                                           |
+|-----------|-----------------------------------------------------------------------------------------------------------------------|
+| mv        | Mueve o cambia el nombre de archivos y directorios                                                                    |
+| chmod     | Modifica los permisos de archivo                                                                                      |
+| chown     | Cambia el propietario de un archivo                                                                                   |
+| dd        | Copia datos de un lugar a otro                                                                                        |
+| pwd       | Muestra el nombre del directorio actual                                                                               |
+| ps        | Enlista los procesos del sistema que están en ejecución                                                               |
+| su        | Simula un inicio de sesión como otro usuario o para convertirse en superusuario                                       |
+| sudo      | Ejecuta un comando como superusuario de forma predeterminada u otro usuario nombrado                                  |
+| grep      | Se utiliza para buscar cadenas de caracteres específicas dentro de un archivo o de <br> las salidas de otros comandos |
+| ifconfig  | Se utiliza para mostrar o configurar la información relacionada con la tarjeta de red                                 |
+| apt-get   | Se utiliza para installar, configurar y eliminar paquetes en Debian y sus derivados                                   |
+| iwconfig  | Se utiliza para mostrar o configurar la información relacionada con la tarjeta de red inalámbrica                     |
+| shutdown  | Apaga la computadora. Se puede indicar reiniciar, detener, suspensión o expulsar a todos los usuarios conectados      |
+| passwd    | Se utiliza para cambiar la contraseña. Sin parámetros, cambia la contraseña del usuario actual                        |
+| cat       | Se utiliza para enumerar el contenido de un archivo y espera el nombre de archivo como parámetro                      |
+| man       | Se utiliza para mostrar la documentación para un comando específico                                                   |
+
+Muchas herramientas de línea de comando están incluidas en Linux de manera predeterminada. Para ajustar el funcionamiento del comando, los usuarios pueden añadir los parámetros y los modificadores al comando. La tabla enlista algunos de los comandos más comunes relacionados con archivos y directorios.
+
+| Comando   | Descripción                                                   |
+|-----------|---------------------------------------------------------------|
+| ls        | Muestra los archivos dentro de un directorio                  |
+| cd        | Cambia el directorio actual                                   |
+| mkdir     | Crea un directorio                                            |
+| cp        | Copia archivos de origen a destino                            |
+| mv        | Mueve o cambia el nombre de archivos y directorios            |
+| rm        | Elimina archivos y directorios                                |
+
+Para obtener ayuda completa sobre todo Kali Linux, abre https://www.kali.org/docs/.
+Aquí puedes realizar una búsqueda escribiendo palabras clave en el cuadro de búsqueda o usar las cetegorías para encontrar una respuesta por tema.
+
+
+<!-- [PASO 2] -->
+__Paso 2: Crea y cambia directorios__
+
+En este paso, utilizará los comandos cambiar directorio (cd), crear directorio (mkdir) y enumerar directorio (ls).
+
+Nota: Directorio es otra palabra para carpeta. Los términos directorio y carpeta se utilizan indistintamente en esta práctica de laboratorio.
+
+Nota: Puede haber ocasiones en las que un comando no funcione porque el usuario que está conectado actualmente no tiene permiso para ejecutarlo. Para obtener permiso temporalmente para el comando, continúe el comando con sudo, que significa superusuario "do" ("hace"). Es posible que deba proporcionar la contraseña de un usuario que tenga permiso para realizar el comando. Alternativamente, puede utilizar un terminal que tenga un mayor nivel de permiso. Este terminal se llama raíz Terminal Emulator o Emulador de Terminal Raíz y se puede encontrar en el panel mediante el menú desplegable junto al icono del terminal.
+
+- En una terminal, ingresa **pwd** en el indicador. Este comando imprimirá el directorio de trabajo actual en la terminal.
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ pwd
+/home/kali
+```
+- Dirígete al directorio /home/kali si no es tu directorio actual. Escribe **cd /home/kali** para cambiar el directorio de trabajo.
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ cd /home/kali
+```
+- Escribe **ls -l** para enumerar los archivos y carpetas que se encuentran en el directorio de trabajo actual. El comando *ls* significa lista. La opción *-l*, muestra el tamaño, los permisos, la propiedad y la fecha de creación del archivo, entre otras propiedades.
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ ls -l
+total 36
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Desktop
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Documents
+drwxr-xr-x 2 kali kali 4096 Jul 13  2011 Downloads
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Music
+drwxr-xr-x 2 kali kali 4096 Sep  3  2011 OTHER
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Pictures
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Public
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Templates                                                       
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Videos 
+```
+- En el directorio actual, utiliza el comando **mkdir** para crear tres nuevas carpetas: *kali_folder1*, *kali_folder2*, *kali_folder3*. Escribe *mkdir kali_folder1 kali_folder2 kali_folder3* y presiona *Enter*.
+``` bash
+┌──(kali㉿Kali)-[~]                                                                                      
+└─$ mkdir kali_folder1 kali_folder2 kali_folder3
+```
+- Escribe *ls -l* para verificar que se hayan creado las carpetas y navegar a una nueva carpeta.
+``` bash
+┌──(kali㉿Kali)-[~]                                                                                      
+└─$ ls -l                                                                                                
+total 48                                                                                                 
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Desktop                                                         
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Documents                                                       
+drwxr-xr-x 2 kali kali 4096 Jul 13  2011 Downloads                                                       
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Music                                                           
+drwxr-xr-x 2 kali kali 4096 Sep  3  2011 OTHER                                                           
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Pictures                                                        
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Public                                                          
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Templates                                                       
+drwxr-xr-x 2 kali kali 4096 Nov 13 06:29 Videos                                                          
+drwxr-xr-x 2 kali kali 4096 Nov 14 00:53 kali_folder1                                                    
+drwxr-xr-x 2 kali kali 4096 Nov 14 00:53 kali_folder2                                                    
+drwxr-xr-x 2 kali kali 4096 Nov 14 00:53 kali_folder3 
+```
+- Utiliza el comando *mkdir* para crear una nueva carpeta llamada *kali_folder4* dentro de la carpeta *kali_folder3*
+``` bash
+┌──(kali㉿Kali)-[~]                                                                                      
+└─$ mkdir /home/kali/kali_folder3/kali_folder4
+```
+- Utiliza el comando *ls -l* para verificar que se haya creado la carpeta
+``` bash
+┌──(kali㉿Kali)-[~]                                                                                      
+└─$ ls -l /home/kali/kali_folder3
+total 4                                                                                                  
+drwxr-xr-x 2 kali kali 4096 Nov 14 00:56 kali_folder4 
+```
+Hasta este punto, hemos utilizado rutas completas. El término "ruta completa" es el que se utiliza para hacer referencia a rutas que siempre comienzan en el directorio raíz (/). También se puede trabajar con rutas relativas. Las rutas relativas reducen la cantidad de texto que se debe escribir. Para comprender cómo funcionan las rutas relativas, tenemos que entender los directorios . y .. (directorios de punto y doble punto). Desde el directorio kali_folder3, emita ls –la:
+``` bash
+┌──(kali㉿Kali)-[~/kali_folder3]                                                                         
+└─$ ls -la
+total 12                                                                                                 
+drwxr-xr-x  3 kali kali 4096 Nov 14 00:56 .                                                              
+drwx------ 20 kali kali 4096 Nov 14 00:53 ..                                                             
+drwxr-xr-x  2 kali kali 4096 Nov 14 00:56 kali_folder4 
+```
+La opción -a le indica a ls que debe mostrar todos los archivos. Observe los listados . y .. que muestra ls . El sistema operativo utiliza estos listados para rastrear el directorio actual (.) y el superior en el árbol (..) Puede utilizar . y .. con el comando cd para cambiar directorios. Utilizar el comando cd para pasar de un directorio al . no genera ningún cambio de directorio visible porque . apunta a su propio directorio.
+
+- Cambia el directorio actual a */home/kali/kali_folder3*:
+``` bash
+┌──(kali㉿Kali)-[~/kali_folder3]                                                                         
+└─$ cd .
+                                                                                                         
+┌──(kali㉿Kali)-[~/kali_folder3]                                                                         
+└─$ 
+```
+- Escriba *cd*
+``` bash
+┌──(kali㉿Kali)-[~/kali_folder3]                                                                         
+└─$ cd                                                                                                   
+                                                                                                         
+┌──(kali㉿Kali)-[~]
+└─$    
+```
+- Al cambiar el directorio al directorio *..*, cambiará al directorio que está un nivel más arriba en la ruta. Este directorio también se conoce como *directorio matriz*. Escribe *cd ..*
+``` bash
+┌──(kali㉿Kali)-[/home]
+└─$                                                                                                      
+```
+
+
+<!-- [PASO 3] -->
+__Paso 3: Redirecciona salidas__
+
+Otro potente operador de la línea de comandos de Linux se conoce como redirect. Representado por el símbolo  > , este operador permite redireccionar la salida de un comando a otra ubicación que no sea la ventana del terminal actual (la opción predeterminada).
+- Utiliza el comando *cd* para cambiar al directorio */home/kali (~)*:
+``` bash
+┌──(kali㉿Kali)-[/home]
+└─$ cd                                                                                                   
+
+┌──(kali㉿Kali)-[~]
+└─$   
+```
+- Utiliza el comando *echo* para hacer eco de un mensaje. Como no se definió ninguna salida, la salida de echo se emitirá a la ventana del terminal actual.
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ echo this is a text message
+this is a text message
+
+```
+- Utiliza el operador _>_ para redirigir la salida de eco a un archivo de texto en lugar de a la pantalla:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ echo redirect this to a file > text_file.txt
+```
+- Ten en cuenta que, aunque el archivo *text_file.txt* no existía, se creó automáticamente para recibir la salida generada por *echo*. Utiliza el comando *cat* para mostrar el contenido del archivo *text_file.txt*:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ cat text_file.txt                                                                                    
+redirect this to a file
+```
+
+
+<!-- [PASO 4] -->
+__Paso 4: Redirigir y agregar un archivo de texto__
+- Similar al operador _>_, el operador _>>_ también permite redirigir datos a archivos. La diferencia es que _>>_ anexa datos al final del archivo en cuestión y mantiene el contenido actual intacto. Para agregar un mensaje al *text_file.txt*, emite el siguiente comando:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ echo this text will be appended to the text file >> text_file.txt
+```
+- Utiliza el comando *cat* para mostrar nuevamente el conteniudo del archivo de texto *text_file.txt*.
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ cat text_file.txt
+redirect this to a file
+this text will be appended to the text file
+``` 
+
+<!-- [PASO 5] -->
+__Paso 5: Elimina archivos y directorios__
+- Utiliza el comando *rm* para eliminar archivos o directorios. Emite el siguiente comando para eliminar el archivo *text_file.txt* del directorio de inicio. El comando *ls* se puede utilizar para mostrar que el archivo *text_file.txt* se ha eliminado del directorio de inicio:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ rm text_file.txt                                                                                     
+
+┌──(kali㉿Kali)-[~]
+└─$ ls
+Desktop    Downloads  OTHER     Public     Videos        kali_folder2
+Documents  Music      Pictures  Templates  kali_folder1  kali_folder3
+
+┌──(kali㉿Kali)-[~]
+└─$  
+```
+- En Linux, los directorios se ven como un tipo de archivo. Por lo tanto, el comando *rm* también se utiliza para eliminar directorios, pero se debe utilizar la opción *-r* (recursiva). Observa que todos los archivos y demás directorios que se encuentran dentro de un directorio determinado también son eliminados cuando se elimina un directorio matriz. Emite el siguiente comando para eliminar la carpeta *kali_folder1* y su contenido:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ rm -r kali_folder1
+```
+
+
+<!-- [PASO 6] -->
+__Paso 6: Mueve archivos y directorios__
+- Mover archivos es similar a copiar archivos. La diferencia es que al mover un archivo se lo quita de su ubicación original. Utiliza los comandos *mv* para mover archivos a cualquier lugar del sistema de archivos local. Al igual que el comando *cp*¨, el comando *mv* también requiere parámetros de origen y destino.
+- Crea un nuevo archivo *text_file.txt* en la carpeta *kali_folder2* redirigiendo texto a él.
+- Regresa a la carpeta _/home/kali/_.
+- Ejecuta el siguiente comando para mover el *text_file.txt* desde ***/home/kali/kali_folder2*** al directorio de inicio. _Nota_: Hay un punto al final del comando.
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ mv kali_folder2/text_file.txt .
+```
+- El comando *mv* también se puede utilizar para mover directorios completos y los archivos que contienen. Para mover *kali_folder3* a *kali_folder2* utiliza el siguiente comando:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ mv kali_folder3/ kali_folder2/
+```
+- Usa el comando *ls* para verificar que el directorio *kali_folder3* se haya movido correctamente a *kali_folder2*:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ ls /home/kali/kali_folder2                                                                           
+kali_folder3
+```

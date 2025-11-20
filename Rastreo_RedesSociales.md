@@ -1,0 +1,35 @@
+# Práctica de laboratorio - Recopilación de inteligencia de los empleados
+
+## Objetivos
+- Utilice las redes sociales para recopilar información de identificación personal (PII).
+- Recopilar información a través de las redes sociales.
+## Trasfondo / Escenario
+Desafortunadamente, las personas a menudo publican demasiada información sobre sí mismas en línea para que cualquiera pueda verlas. Esto los hace muy vulnerables a los ataques. Los actores de amenazas pueden recopilar fácilmente mucha PII sobre una víctima simplemente realizando un reconocimiento en sitios de medios sociales como Facebook, LinkedIn, Twitter, WhatsApp e Instagram. Luego pueden usar esta información para identificar a las víctimas y robar PII para fines nefastos.
+
+Debido a esto, es importante que las personas monitoreen su presencia en las redes sociales y estén al tanto de los datos que son de acceso público.
+
+__Nota__: El acceso no autorizado a datos, computadoras y sistemas de redes es un delito en muchas jurisdicciones y, a menudo, está acompañado por graves consecuencias, independientemente de qué motive al delincuente. En su carácter de usuario de este material, la responsabilidad del alumno es conocer y cumplir las leyes de uso de las computadoras.
+
+## Recursos necesarios
+- Computadora personal o dispositivo móvil con acceso a internet
+
+## Parte 1: Recopile información a través de los medios sociales.
+Para esta práctica de laboratorio, desempeñará el papel de un delincuente cibernético e investigará sus propios medios sociales para ver cuánta PII puede obtener. Alternativamente, puede obtener permiso de alguien que conoce bien, como un amigo o familiar, e investigar sus medios sociales. Al final del ejercicio, podrá compartir con ellos lo que descubra.
+
+__Paso 1: Realice la investigación__
+Realice una búsqueda por su nombre y nombres de usuario mediante diferentes motores de búsqueda. Abra una ventana de incógnito o privada para esta práctica de laboratorio. Esto evitará que se complete la información de inicio de sesión guardada y no debería ver ningún contenido almacenado en la caché mientras realiza la búsqueda. Use variaciones de su nombre también, con y sin un segundo nombre o inicial, nombres de casados y de soltera, etc.
+
+Esto le permitirá ver lo que está indexado.
+
+__Paso 2: Realizar una auditoría como extraño__.
+Cree una cuenta de medios sociales “falsa” para ver sus propios perfiles como lo haría un extraño.
+Realice una auditoría de todos los sitios de medios sociales y las cuentas que ha utilizado.
+Busque información identificable y patrones de comportamiento que puedan ser útiles para un atacante. Esto incluye cosas como su lugar de trabajo, dónde vive, preferencias de compra en línea, su agenda diaria, planes de vacaciones, creencias políticas, intereses, pasatiempos, educación, creencias culturales, miembros de la familia, mascotas, etc.
+
+*Los elementos para investigar incluyen:*
+- Todos sus perfiles de redes sociales: nombre, fecha de nacimiento, información de contacto, etc.
+- Sus actualizaciones de estado: eventos de la vida, relaciones y estado de trabajo, creencias políticas y religiosas.
+- Datos de ubicación: información de la ciudad de origen y registros geográficos.
+- Contenido compartido: imágenes y comentarios que ha publicado y aquellos en los que se lo menciona o etiqueta.
+- Publicaciones de amigos y familiares.
+- Cualquier debate en línea al que se haya unido o en el que haya participado.

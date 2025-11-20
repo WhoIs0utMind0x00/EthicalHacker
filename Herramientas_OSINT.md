@@ -1,0 +1,215 @@
+# Uso de herramientas OSINT
+
+## Objetivos
+En esta práctica de laboratorio, explorarás varias herramientas de OSINT que los evaluadores de penetración usan comunmente.
+- Examinar los recursos de OSINT
+- Usar SpiderFoot
+- Investigar reconocimiento
+- Encontrar archivos interesantes con Recon-ng
+
+## Trasfondo / Escenario
+Al realizar actividades de recopilación de información, el reconocimiento pasivo utiliza datos abiertos y de acceso público para guiar los esfuerzos de reconocimiento activo y recopilar información sobre la empresa y los empleados. En OSINT, los datos son de código abierto. Las herramientas OSINT pueden ser de código abierto o no. Algunas herramientas son gratuitas y abiertas, otras requieren registro para usar versiones gratuitas y otras requieren una tarifa para su uso. OSINT comúnmente usa fuentes de datos que están disponibles para cualquier hacker, por lo que parte del esfuerzo de una prueba de penetración es informar sobre información confidencial comúnmente disponible para evaluar las vulnerabilidades que puede causar. Los objetivos de OSINT son:
+- Determinar la huella digital de la organización
+- Determinar qué datos sobre la organización están disponibles para los delincuentes cibernéticos.
+
+## Recursos necesarios
+- Kali VM personalizada para el curso de Ethical Hacker
+- Acceso a Internet
+
+## Parte 1: Examinar los recursos de OSINT
+__Paso 1: Acceder al marco de OSINT__
+ El marco de trabajo de OSINT es una forma útil de visualizar las herramientas y los recursos de OSINT que están disponibles. Desafortunadamente, está un poco desactualizado y algunos recursos ya no están disponibles. Sigue siendo valioso ayudarlo a comprender los tipos de herramientas disponibles y sus usos. En muchos casos, los enlaces siguen siendo buenos.
+1. Vaya al sitio del marco de OSINT en https://osintframework.com/.
+2. Verá una estructura vertical en forma de árbol que consta de categorías de herramientas y recursos OSINT a los que se puede acceder desde el marco. Haga clic en Nombre de usuario en la parte superior del árbol. Luego verá aparecer dos subcategorías. Haga clic en cada uno para abrir los árboles de recursos de cada subcategoría. Nota: en la esquina superior derecha de la página hay una leyenda que identifica el tipo de recurso.
+3. En Motores de búsqueda de nombre de usuario, haga clic en "WhatsMyName (T)".
+4. El enlace lo lleva a un repositorio de Git para el proyecto WhatsMyName. En el contenido README.md de la herramienta, se enumeran los diversos sitios que implementan WhatsMyName. No dude en explorarlos, pero haremos clic en el primer enlace https://whatsmyname.app/ para visitar un sitio web gratuito que implementa WhatsMyName.
+La organización principal del sitio, https://www.osintcombine.com/, tiene varias herramientas gratuitas interesantes disponibles.
+
+5. En el cuadro de búsqueda, escriba algunos nombres de usuario, cada uno en una línea separada. Utilice sus propios nombres de usuario u otros que encuentre. Intente buscar en Internet lista de palabras de nombres de usuario comunes para otros posibles términos de búsqueda. Puede filtrar los resultados según los filtros de categoría, pero, por ahora, solo haga clic en el botón verde de la lupa para iniciar la búsqueda.
+En una prueba de penetración, usaría otra herramienta, como SpiderFoot (a continuación) para encontrar nombres de usuario en direcciones de correo electrónico que están asociadas con una empresa o dominio.
+
+6. Investigue los resultados. Puede abrir los enlaces a las cuentas desde los rectángulos verdes o desde la tabla de resultados.
+7. WhatsMyName proporciona un informe muy flexible de los resultados. La tabla de resultados puede ordenarse por columna y puede exportar los resultados como CSV o PDF para generar informes. Además, puede filtrar fácilmente por nombre de usuario y buscar dentro de los resultados. Por último, obtiene enlaces a las páginas de perfil de los usuarios en muchos sitios diferentes.
+
+__Paso 2: Investigue SMART - Herramienta de recursos agregados Start Me.__
+El servicio web start.me es un administrador de marcadores y una herramienta de productividad populares. El personal de Capacitación My OSINT (MOT) ha configurado un sistema de búsqueda que encuentra todos los enlaces relacionados con OSINT que las personas han marcado y compartido en start.me. Hay muchos. Puede ingresar términos de búsqueda relevantes para OSINT para encontrar enlaces a recursos relacionados.
+
+1. Vaya a https://smart.myosint.training/.
+2. En el cuadro de búsqueda, ingrese el término usernames. Verá una lista de herramientas OSINT relacionadas con nombres de usuario que otras personas han encontrado.
+3. Abra algunos enlaces para revisar los recursos. Sin embargo, tenga cuidado, estos sitios web provienen de fuentes públicas. Algunos pueden ser maliciosos.
+4. Elija algunas de las categorías que vio en el marco de OSINT y vea qué enlaces aparecen.
+5. Utilice este sitio para buscar herramientas y recursos de OSINT que lo ayuden en su trabajo de evaluación de pruebas.
+
+## Parte 2: Uso de SpiderFoot
+SpiderFoot es un escáner OSINT automatizado. Está incluido con Kali. SpiderFoot consulta más de 1000 fuentes de información abiertas y presenta los resultados en una GUI fácil de usar. SpiderFoot también se puede ejecutar desde una consola. SpiderFoot siembra su escaneo con uno de los siguientes:
+
+- Nombres de dominio
+- Direcciones IP
+- Dirección de subred
+- Número de sistema autónomo (ASN) 
+- Direcciones de correos electrónicos
+- Números de teléfono
+- Nombres personales
+SpiderFoot ofrece la opción de elegir escaneos según el caso de uso, los datos requeridos y el módulo de SpiderFoot. Los casos de uso son:
+
+- Todo - obtenga toda la información posible sobre el objetivo. Este caso de uso puede tardar mucho en completarse.
+- Huella - comprenda el perímetro de la red del objetivo, las identidades asociadas y otra información que se obtiene mediante el rastreo web extenso y el uso de motores de búsqueda.
+- Investigar - se trata de objetivos que sospecha que tienen un comportamiento malicioso. Se devolverán las huellas, las búsquedas en listas negras y otras fuentes que informan sobre sitios maliciosos.
+- Pasivo - este tipo de escaneo se utiliza si no es deseable que el objetivo sospeche que se está analizando. Esta es una forma de OSINT pasivo.
+
+__Paso 1: Inicia y ejecuta SpiderFoot.__
+
+En una terminal, ingrese el siguiente comando:
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ spiderfoot -l 127.0.0.1:5001
+```
+El comando debe ejecutarse sin errores. Abre un navegador e ingresa la dirección IP y el puerto para la GUI de SpiderFoot. Esta pantalla muestra todos los escaneos ejecutados recientemente. Al ser la primera vez, está vacío.
+
+__Paso 2: Explora SpiderFoot__
+
+1. Antes de comenzar, observe los escáneres que utiliza SpiderFoot para crear sus informes. Vaya a la pestaña Settings (Configuración).
+2. Las dos primeras entradas del menú de la izquierda están relacionadas con el funcionamiento de SpiderFoot. Las entradas debajo de esto son para los escáneres que usa SpiderFoot. Hay más de 200. Haga clic en los escáneres para ver el nombre del módulo de SpiderFoot, los detalles sobre el escáner y las configuraciones que se pueden realizar, si corresponde. Complete la siguiente tabla con algunos ejemplos. El nombre del escáner está en el menú de configuración. El nombre del módulo aparece en los detalles del escáner. Todos los módulos de SpiderFoot se denominan sfp_ [nombre del módulo].
+
+**Sugerencia**: los escáneres con un candado al lado indican que se necesita una clave de API. Se proporciona más información sobre los requisitos clave en los detalles del escáner. Haga clic en "?" junto a la opción Configuración de API.
+
+**Sugerencia:** También puede interactuar con SpiderFoot desde el terminal. Puede mostrar todos los módulos que están disponibles en SpiderFoot y canalizar la salida a un archivo de texto. Introduzca ***spiderfoot –h*** para ver las opciones de la línea de comandos.
+
+El comando grep se puede utilizar para buscar palabras clave en el archivo. Esto no proporcionará información sobre los requisitos de la API, pero le ayudará a comprender la lista de módulos disponibles.
+``` bash
+┌──(kali㉿Kali)-[~]
+└─$ spiderfoot -M | grep [término-de-búsqueda]
+```
+| Tipo de información                                           | Nombre del escáner/módulo                     | ¿Requiere clave de API? ¿Gratuito?    | 
+|---------------------------------------------------------------|-----------------------------------------------|---------------------------------------|
+| Posibles cuentas asociadas a un dominio                       | Buscador de cuentas sfp_accounts              | No, N/A                               |
+| Enlaces asociados con el objetivo                             | Referencia cruzada, sfp_crossref              | No                                    |
+| Direcciones de correo electrónico asociadas con el objetivo   | EmailCrawlr, sfp_emailcrawlr                  | Sí, plan gratuito                     |
+| Dominios y URL asociados al destino                           | grep.app, sfp_grep_app                        | Sí, plan gratuito                     |
+| Información de geolocalización                                | ipapi.com, sfp_ipapi.com                      | Sí, plan gratuito                     |
+| Información sobre vulneración de datos                        | Búsqueda de fugas, sfp_keybase                | Sí, gratis                            |
+
+__Paso 3: Ejecute un escaneo de SpiderFoot para un dominio__
+- Haz clic en la ficha *New Scan* en la GUI
+- Introduce un nombre para el escaneo y seleccione un objetivo. En este caso, utilizaré **hacker.org**
+- Escanearás por caso de uso. Tenga en cuenta que también puede escanear por el tipo de información requerida o seleccionando los módulos de escáner individuales que te gustaría utilizar. Al ejecutar escaneos más específicos, puedes obtener más información sobre los módulos y la información que se puede recopilar.
+- Selecciona el caso de uso de escaneo como **Footprint**
+
+**Nota**: El escaneo de casos de uso *All* puede utilizar el escaneo activo. A menos que tenga permiso para escanear el objetivo, debe evitar esta configuración. Para ser completamente seguro, el caso de uso pasivo debe evitar cualquier problema con el escaneo no autorizado.
+
+- Haz clic en el botón *Run Scan Now*
+- Deberías ver aparecer un gráfico de barras. Las estadísticas de escaneo comenzarán a incrementarse y aparecerán nuevas barras en el gráfico a medida que se obtengan nuevos resultados. Pasa el mouse sobre las barras para ver un resumen de los resultados de ese tipo de datos.
+- Los escaneos de SpiderFoot son muy detallados y pueden llevar mucho tiempo. Dale a este escaneo al menos 30 minutos para que haya una buena recopilación de información. Para obtener la mayor cantidad de detalles, un escaneo puede llevar horas. Mientras se ejecuta el escaneo, puedes examinar los resultados.
+
+__Paso 4: Investiga los resultados del escaneo__
+
+- Regresa a los resultados del escaneo haciendo clic en la ficha *Scans*. Verás una tabla con el escaneo que se está ejecutando actualmente y los escaneos anteriores.
+- Haz clic en el cuadrado negro en la columna más a la derecha de la tabla de escaneo para detener el escaneo. Parte de la información no está disponible hasta que se cancela o se completa el escaneo.
+- Haz clic en el nombre del escaneo en la tabla para volver a la vista del escaneo. Te dirigirá a la ficha *Browse*. Cada fila de la tabla representa los datos encontrados por los distintos módulos. Algunos módulos contribuyen a varios tipos de datos.
+- Investiga los resultados
+
+__Paso 5: Registra las claves de API__
+
+Las claves de API mejorarán la funcionalidad de SpiderFoot. Algunas de estas claves de API requieren un registro gratuito. Las herramientas de pruebas de penetración disponibles evolucionan constantemente. Algunas herramientas o servicios que alguna vez fueron gratuitos y abiertos pueden convertirse en tarifas con el tiempo.
+
+**Nota**: Algunas API pueden limitar sus resultados después de haber alcanzado la cantidad prescrita de usos.
+
+| Módulo                | Tipo de Información                           |
+|-----------------------|-----------------------------------------------|
+| Construido con        | Software web en uso                           |
+| Hunter.io             | Búsqueda de direcciones de correo electrónico |
+| Onion.link            | Búsqueda en el sitio TOR Onion                |
+| InteligenciaX         | Todo                                          |
+
+__Paso 6: Analiza los resultados de los escaneos de los módulos de la API__
+
+- Este escaneo no debería llevar mucho tiempo.
+- Explora el escaneo para ver los resultados. Presta atención a la columna *Módulo de origen*. Deberías ver algunos de los escáneres configurados con claves de API.
+- Ve al tipo Leak Site URL en la tabla de resultados.
+- Haz doble clic en varias de las entradas de la columna Data Element de la tabla, haz clic con el botón derecho y selecciona *Abrir en una nueva pestaña*.
+  
+
+## Parte 3: Investigar el reconocimiento
+Recon-ng es un marco OSINT similar al marco de explotación de Metasploit o al Tooklit de ingeniería social (SET). Consta de una serie de módulos que pueden ejecutarse en sus propios espacios de trabajo. Los módulos se pueden configurar para ejecutarse con ajustes de opciones que son específicos del módulo. Esto simplifica la ejecución de Recon-ng en la línea de comandos porque las opciones para los módulos se establecen de forma independiente dentro del espacio de trabajo. Cuando ejecuta el módulo, utiliza esta configuración para realizar sus búsquedas.
+
+Como su nombre lo indica, Recon-ng se usa para realizar una amplia gama de actividades de reconocimiento en diferentes configuraciones que usted proporcione. Algunos módulos están disponibles con la instalación de Kali y otros están disponibles para su descarga e instalación en el mercado de módulos de Recon-ng.
+
+__Paso 1: Crea un espacio de trabajo__
+
+El reconocimiento tiene autocompletado. Presione el botón de tabulación para completar los comandos y las opciones de comando. Utilice la tecla de tabulación dos veces para enumerar los comandos y las opciones disponibles en diferentes lugares de la línea de comandos. Esto resulta bastante útil.
+
+- Para ejecutar Recon-ng, abra una nueva ventana de terminal e ingrese recon-ng. También puede iniciar el programa yendo al menú de herramientas de Kali, buscando la aplicación y haciendo clic en el icono.
+- Tenga en cuenta que el indicador del terminal cambia para indicar que está trabajando dentro del marco de reconocimiento. Ingrese help para tener una idea de los comandos que están disponibles.
+- Recon-ng utiliza espacios de trabajo para aislar las investigaciones entre sí. Los espacios de trabajo se pueden crear para diferentes partes de una prueba o para diferentes clientes, por ejemplo. Escriba workspaces help para ver las opciones del comando workspaces.
+- Cree un espacio de trabajo denominado prueba ingresando a *workspaces create* seguido del nombre del espacio de trabajo. Tenga en cuenta que la solicitud ha cambiado para indicar que se encuentra en este espacio de trabajo.
+- Escriba *help* para ver los comandos que están disponibles en los espacios de trabajo.
+
+__Paso 2: Investiga los módulos__
+
+Recon-ng es un marco modular. Los módulos son programas de Python con diferentes funciones. Se almacenan en un mercado externo que permite a los desarrolladores crear sus propios módulos y aportarlos para que los usen otros.
+
+Regrese a la solicitud de reconocimiento. Introduzca el comando module search. Esto mostrará los módulos instalados actualmente.
+
+__Paso 3: Investiga el mercado de módulos__
+
+Recon-ng no funcionará sin módulos. En este paso, instalaremos módulos del mercado de Recon-ng. El mercado de módulos es un repositorio público de GitHub. Busque en la web recon-ng-marketplace para ver el repositorio. Explore las carpetas para obtener más información sobre los módulos.
+
+- En el terminal, vea la ayuda del comando marketplace. Utilice la opción search para enumerar todos los módulos que están disponibles actualmente.
+``` bash
+[recong-ng][default] > marketplace search
+```
+- Tenga en cuenta que los módulos están organizados por categoría y tipo. Esto aparece como una ruta antepuesta al nombre del módulo. Puede filtrar la salida agregando un término de búsqueda al comando marketplace search. Pruebe algunos términos de búsqueda diferentes relacionados con la información de OSINT para tener una idea de los módulos que están disponibles.
+- Para obtener más información sobre los módulos individuales, use el comando *marketplace info* seguido del nombre completo del módulo, incluidos su categoría y tipo. Es más fácil seleccionar el nombre del módulo y copiarlo y pegarlo en la línea de comando.
+
+__Paso 4: Instala un nuevo módulo__
+
+Recon-ng accede a los módulos del repositorio de GitHub y los descarga en Kali cuando se instalan
+- Busca en los módulos del mercado mediante *bing* como término de búsqueda. Busca un módulo que no requiera dependencias ni claves de API.
+- Ve la información de este módulo.
+- Para instalar el módulo, copia el nombre completo, incluida la ruta en el portapapeles.
+- Ingresa el comando *marketplace install* seguido del nombre completo del módulo.
+``` bash
+[recon-ng][default] > marketplace install recon/domains-hosts/bing_domain_web
+```
+- Después de la instalación, introduce el comando *module search* para verificar que el nuevo módulo ya esté disponible.
+- Repite el proceso para instalar el módulo *hackertarget*
+
+__Paso 5: Ejecuta los nuevos módulos__
+- Crea un nuevo espacio de trabajo. Nómbralo como desees.
+- Para comenzar a trabajar con un módulo, debe inicializarse. Ingresa *module load hackertarget* para comenzar a trabajar con el módulo. Ten en cuenta que el mensaje cambia para reflejar el módulo cargado.
+- Cada módulo tiene su propio entorno. Los desarrolladores de recon-ng se han encargado de manetener la coherencia del marco, por lo que los mismos comandos están disponibles para cada módulo. Sin embargo, las opciones pueden variar. Escribe *info* en el indicador del módulo para ver detalles importantes sobre el módulo.
+
+- En lugar de pasar opciones en la línea de comandos, en Recon-ng establece las opciones y luego ingresa un comando simple para ejecutar el módulo. Utilice el comando options set source para establecer la única opción para este módulo. Complete el comando especificando el destino como hackxor.net.
+- Verifique la configuración de la opción con el comando info.
+- Escriba run para ejecutar el módulo.
+- Inspeccione la salida del comando. La salida se almacena en una base de datos para que pueda consultarla más adelante. Los datos almacenados son específicos del lugar de trabajo en el que se recopilaron.
+- Ingrese el comando dashboard. Esto consulta la base de datos de Recon-ng y proporciona un resumen de la información que se ha recopilado. Es específico de este espacio de trabajo.
+
+- El comando show muestra los datos de categorías específicas. Ingrese el comando show hosts para mostrar la lista de hosts detectados.
+- Ahora repita el proceso con el módulo bing. Compare los resultados con el módulo hackertarget.
+
+__Paso 6: Investiga la interfaz web__
+
+Recon-ng tiene una interfaz web que simplifica y mejora la visualización de los resultados almacenados en las bases de datos de Recon-ng. También permite una fácil exportación de las tablas de resultados con fines de generación de informes.
+
+- Abra una nueva terminal.
+- Introduzca el comando recon-web para iniciar el proceso de reconocimiento del servidor. Tenga en cuenta el resultado del comando.
+- En una nueva pestaña del navegador, acceda a la página web con la información de URL proporcionada en el resultado.
+- La interfaz web muestra datos del espacio de trabajo predeterminado cuando se abre por primera vez. Haga clic en el nombre del espacio de trabajo naranja en la parte superior de la página para mostrar datos de diferentes espacios de trabajo.
+
+## Parte 4: Encuentra archivos interesantes con Recon-ng
+
+__Paso 1: Instala otro módulo__
+
+- Busca en el mercado un módulo que descubra archivos interesantes en un dominio. El complemento que use no debe tener dependencias ni requisitos clave.
+<!-- discovery/info_disclosure/interesting_files -->
+- Instala y carga el complemento.
+
+__Paso 2: Ejecuta el nuevo módulo__
+- Establece la opción de origen en *hackxor.net* u otra ubicación de tu elección. El sitio web *h4cker.org* también es interesante.
+- Ejecuta el comando. Este módulo crea un archivo .csv en la carpeta recon-ng/data.
+- Busca un archivo y ve el contenido. Algunos de estos archivos se pueden descargar o ver mediante las URL en el resultado del comando.
+
+__Paso 3: Experimenta con diferentes módulos y destinos__
+
+Investigue otros módulos. Utilice los comandos que hemos aprendido hasta ahora para descargar, configurar opciones, ejecutar y ver los resultados del módulo y los diferentes destinos. También proporciona una manera sencilla de exportar resultados a varios formatos de texto para su uso en informes.
