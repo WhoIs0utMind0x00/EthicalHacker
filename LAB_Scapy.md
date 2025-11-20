@@ -223,3 +223,68 @@ Para ver los detalles sobre un paquete específico de la serie, consulte el núm
 ```
 La salida detallada muestra las capas de información sobre las unidades de datos de protocolo (PDU) que conforman el paquete. Los nombres de las capas de protocolo aparecen en rojo en la salida. Examine las direcciones de origen (src) y de destino (dst), así como la parte de datos sin procesar (load=) del paquete recopilado.a
 
+- Utilice la función wrpcap () para guardar los datos capturados en un archivo pcap que Wireshark y otras aplicaciones pueden abrir. La sintaxis es wrpcap (“nombre de archivo.Pcap", nombre de variable), en este ejemplo, la variable que almacenó la salida es “a”.
+```Python
+>>> wrpcap("capture1.pcap", a)
+```
+
+- El archivo .pcap se escribirá en el directorio de usuarios predeterminado. Utilice una ventana de terminal diferente para verificar la ubicación del archivo capture1.pcap con el comando ls de Linux.
+- Abra la captura en Wireshark para ver el contenido del archivo.
+
+## Parte 3: Crear y enviar un paquete ICMP.
+ICMP es un protocolo diseñado para enviar mensajes de control entre dispositivos de red para diversos fines. Hay muchos tipos de paquetes ICMP, siendo echo-request y echo-reply los más familiares para los técnicos de TI. Para ver una lista de los tipos de mensajes que se pueden enviar y recibir mediante ICMP, vaya a https://www.iana.org/assignments/icmp-paraámetros/icmp-paraámetros.xhtml.
+
+__Paso 1: use el modo interactivo para crear y enviar un paquete ICMP personalizado__
+En una ventana de terminal de Scapy, ingrese el comando para rastrear el tráfico de la interfaz conectada a la red 10.6.6.0/24.
+```Python
+>>> sniff(iface="br-internal")
+```
+Abra otra ventana de terminal, introduzca sudo su para realizar la creación de paquetes como raiz. Inicie una segunda instancia de Scapy. Ingrese la función send() para enviar un paquete a 10.6.6.23 con una carga útil de ICMP modificada.
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ sudo su
+[sudo] password for kali: 
+┌──(root㉿Kali)-[/home/kali]
+└─# scapy
+```
+```Python
+>>> send(IP(dst="10.6.6.23")/ICMP()/"This is a test")
+.
+Sent 1 packets.
+```
+Regrese a la primera ventana de terminal y presione CTRL-C. Debería recibir una respuesta similar a ésta:
+```Python
+^C<Sniffed: TCP:0 UDP:0 ICMP:2 Other:0>
+``` 
+Ingrese el comando de resumen para mostrar el resumen con los números de paquete.
+```Python
+>>> a=_
+>>> a.nsummary()
+0000 Ether / IP / ICMP 10.6.6.1 > 10.6.6.23 echo-request 0 / Raw
+0001 Ether / IP / ICMP 10.6.6.23 > 10.6.6.1 echo-reply 0 / Raw
+```
+
+## Parte 4: Crear y enviar un paquete TCP SYN
+En esta parte, utilizará Scapy para determinar si el puerto 445, un puerto compartido de unidad de Microsoft Windows, está abierto en el sistema de destino en 10.6.6.23.
+
+__Paso 1: Inicie la captura de paquetes en la interfaz interna__
+En la ventana de terminal Scapy original, comience una captura de paquetes en la interfaz interna conectada a la red 10.6.6.0/24. Utilice el nombre de la interfaz que obtuvo anteriormente.
+Navegue hasta la segunda ventana de terminal. Cree y envíe un paquete TCP SYN con el comando que se muestra.
+```Python
+>>> send(IP(dst="10.6.6.23")/TCP(dport=445, flags="S"))
+.
+Sent 1 packets.
+>>>
+```
+- Este comando envió un paquete IP al host con la dirección IP 10.6.6.23. El paquete se direcciona al puerto TCP 445 y tiene el indicador S (SYN) activado.
+- Cierre la ventana de la terminal.
+- 
+__Paso 2: Revise los paquetes capturados__
+En la ventana de terminal Scapy original, detenga la captura de paquetes presionando CTRL-C. El resultado debe ser similar al que se muestra a continuación.
+```Python
+^C<Sniffed: TCP:3 UDP:0 ICMP:0 Other:0>
+```
+Vea los paquetes TCP capturados mediante la función nsummary(). Muestre el detalle del paquete TCP que se devolvió desde el equipo de destino en 10.6.6.23.
+```Python
+>>> a[número de paquete]
+```
