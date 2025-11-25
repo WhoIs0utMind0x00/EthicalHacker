@@ -1,0 +1,16 @@
+# Como lidiar con una vulnerabilidad
+Como evaluador de penetración, su objetivo es identificar las debilidades que pueden aprovecharse. Como se mencionó anteriormente, el escaneo de vulnerabilidades es un método para identificar posibles vulnerabilidades. Después de identificar una vulnerabilidad, debe verificarla. Hay muchas maneras de determinar si los resultados de un escáner de vulnerabilidades son válidos. La validación final es la explotación.
+
+Para determinar si una vulnerabilidad es aprovechable, primero debe identificar una forma de explotar o aprovecharse de esa vulnerabilidad. Supongamos que su escáner de vulnerabilidades informa que hay una versión desactualizada de Apache Struts que es vulnerable a un defecto no autenticado que se puede explotar de forma remota. Una de las primeras cosas que debe hacer es determinar si hay una explotación disponible. Muchas veces, esto se puede encontrar con un marco de explotación como Metasploit. Como regla general, si una vulnerabilidad tiene un módulo coincidente en Metasploit, casi siempre se debe considerar de alta gravedad. Dicho esto, también hay otros métodos para encontrar explotaciones, y siempre puede escribir sus propias explotaciones.
+
+__¿Cómo prioriza sus hallazgos para la siguiente fase de su prueba de penetración?__ Para determinar la prioridad, debe responder algunas preguntas:
+- _¿Cuál es la gravedad de la vulnerabilidad?_
+- _¿A cuántos sistemas se aplica la vulnerabilidad?_
+- _¿Cómo se detectó la vulnerabilidad?_
+- _¿La vulnerabilidad se encontró con un escáner automatizado o manualmente?_
+- _¿Cuál es el valor del dispositivo en el que se encontró la vulnerabilidad?_
+- _¿Este dispositivo es fundamental para su empresa o infraestructura?_
+- _¿Cuál es el vector de ataque y se aplica a su entorno?_
+- _¿Existe una posible solución alternativa o mitigación?_
+
+Responder estas preguntas puede ayudarlo a determinar la prioridad que debe asignar a las vulnerabilidades encontradas. El protocolo estándar hace que comience con las vulnerabilidades de mayor gravedad que tienen la mayor probabilidad de ser explotadas. Si estas vulnerabilidades son realmente válidas, es posible que ya estén comprometidas. (Si en cualquier momento durante una prueba de penetración, descubre que un sistema está siendo explotado activamente, debe informarlo de inmediato al propietario del sistema). A continuación, debe abordar cualquier vulnerabilidad que se encuentre en los sistemas críticos, independientemente del nivel de gravedad. Es posible que haya una cadena de explotaciones disponible para un atacante que permitiría que una vulnerabilidad de menor gravedad se vuelva crítica. Primero debe proteger los sistemas críticos. A continuación, es posible que desee establecer prioridades en función de la cantidad de sistemas afectados por el hallazgo. Si una gran cantidad de sistemas se ven afectados, esto aumentaría la prioridad porque muchas explotaciones en esta vulnerabilidad tendrían un mayor impacto en su entorno. Estas son pautas sugeridas, pero cuando se trata de priorizar la administración y mitigación de vulnerabilidades, realmente depende del entorno específico.

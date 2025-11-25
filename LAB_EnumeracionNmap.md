@@ -41,7 +41,7 @@ La página del manual de Nmap proporciona información adicional. Para acceder a
 | -O                | Permite la detección del sistema operativo                                                                        |      
 | -p                | Permite escanear puertos o rangos de puertos específicos                                                          |
 | -sF               | Realiza un escaneo TCP FIN                                                                                        |
-| -Sn               | Realiza un escaneo de detección de host                                                                           | 
+| -sn               | Realiza un escaneo de detección de host                                                                           | 
 | -sS               | Realiza un escaneo TCP SYN                                                                                        |
 | -c                | Realiza un escaneo de TCP Connect                                                                                 |
 | -sV               | Sondeos de puertos abiertos para determinar información de servicio / versión                                     |
