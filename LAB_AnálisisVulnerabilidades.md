@@ -1,0 +1,268 @@
+# Práctica de laboratorio - Análisis en busca de vulnerabilidades de _pymes_ com _enum4linux_
+
+## Topología
+<img src="Imagenes/topologia_analisis.jpeg" width="35%" height="35%" style="border-radius:10px;"><br>
+
+## Objetivos
+Enum4linux es una herramienta para enumerar información de Windows y Samba. Samba es una aplicación que permite a los clientes de Linux y Apple participar en redes de Windows. Permite a los clientes que no son de Windows utilizar el protocolo Server Message Block (SMB) para acceder a los servicios de archivos e impresión. Los servidores Samba pueden participar en un dominio de Windows, tanto como cliente como servidor.
+
+En esta práctica de laboratorio se cumplirán los siguientes objetivos:
+
+- Iniciar enum4linux y explore sus capacidades.
+- Identificar los equipos con servicios SMB en ejecución.
+- Usar enum4linux para enumerar usuarios y recursos compartidos de archivos de red.
+- Utilizar _smbclient_ para transferir archivos entre sistemas.
+
+## Trasfondo / Escenario
+Las redes de servidores de Windows mal administradas y protegidas son un gran riesgo para la seguridad. Los evaluadores de penetración deben descubrir cualquier vulnerabilidad en las funciones de uso compartido de archivos e impresoras que puedan dejar a una organización vulnerable a los ataques. En esta actividad, explorará las capacidades de la herramienta enum4linux para enumerar la información de uso compartido de usuarios y archivos de los servidores Samba. Por último, utilizará la utilidad smbclient para transferir archivos entre sistemas.
+
+## Recursos necesarios
+- Kali VM personalizada para el curso de Ethical Hacker
+
+## Parte 1: Inicie enum4linux y explore sus capacidades
+__Paso 1: Verifique que enum4linux esté instalado y vea el archivo de ayuda__<br>
+Cargue Kali Linux con el nombre de usuario kali y la contraseña kali. Abra una sesión de terminal desde la barra de menús en la parte superior de la pantalla.
+La mayoría de los comandos enum4linux deben ejecutarse como root, así que use el comando sudo su para obtener acceso root persistente.
+En el indicador, ingrese el comando para ver el archivo de ayuda enum4linux.
+```bash
+┌──(kali㉿kali)-[~]
+└─$ sudo su
+[sudo] password for kali:
+┌──(root㉿kali)-[/home/kali]
+└─# enum4linux –help
+```
+El archivo de ayuda contiene la sintaxis y las opciones disponibles para enumerar la información del host y el servidor en las redes que usan SMB. Enum4linux requiere que Samba esté instalado en el sistema host, en este caso la computadora Kali Linux, porque depende de las utilidades integradas de Samba.<br>
+__Paso 2: Investigue los términos asociados con las funciones de SMB__
+Es posible que muchos términos utilizados en las funciones de Windows y SMB no le resulten familiares, por lo que el resultado de los comandos _enum4linux_ puede ser difícil de interpretar al principio.
+
+1. __Identificador relativo (RID)__<br>
+Es la parte final y numérica de un __Identificador de seguridad (SID)__ en entornos de Microsoft Windows, que identifica de manera única a una cuenta de usuario, grupo o equipo dentro de su dominio o sistema local.
+
+2. __Identificador de seguridad (SID)__<br>
+En sistemas de Windows, es un número único para identificar usuario y grupos de seguridad.
+
+3. __Controlador de dominio (DC)__<br>
+Es un servidor que gestiona la seguridad y el acceso a los recursos dentro de una red informática, conocida como dominio. Su función principal es autenticar a los usuarios, validando sus credenciales para permitirles iniciar sesión y acceder a recursos como archivos, impresoras y aplicaciones, y también puede gestionar políticas de seguridad.
+
+4. __Protocolo de acceso al directorio ligero (LDAP)__<br>
+Es un protocolo estándar de Internet que permite buscar y modificar información en servicios de directorio, que son como bases de datos con información de atributos.
+
+5. __Grupo de trabajo__<br>
+Es un grupo conectado a una red de área local (LAN) compuesta por un grupo de computadoras y dispositivos que se conectan para compartir recursos como impresoras, archivos y acceso a Internet.
+
+## Uso de Nmap para buscar servidores SMB
+__Paso 1: Escanee las redes virtuales para encontrar objetivos potenciales__
+Una forma de identificar posibles objetivos para la enumeración de SMB es examinar los puertos abiertos. Los puertos abiertos comunes en los servidores SMB son:
+
+- TCP 135       RCP
+- TCP 139       Sesión de NetBIOS
+- TCP 389       Servidor LDAP
+- TCP 445       Servicio de archivos SMB
+- TCP 9389      Servicios web de Active Directory
+- TCP/UDP 137   Servicio de nombres NeBIOS
+- UDP 138       Datagrama de NetBIOS
+
+Se incluyen dos redes virtuales en la VM de Kali con contenedores de Docker. Utilice el comando _nmap -sN_ para encontrar los servicios disponibles en los hosts de la red virtual 172.17.0.0.
+```bash
+┌──(root㉿Kali)-[/home/kali]                 
+└─# nmap -sN 172.17.0.0/24
+Starting Nmap 7.94 ( https://nmap.org ) at 2025-12-01 06:02 UTC
+Nmap scan report for metasploitable.vm (172.17.0.2)
+Host is up (0.0000030s latency).
+Not shown: 981 closed tcp ports (reset)
+PORT     STATE         SERVICE
+21/tcp   open|filtered ftp
+22/tcp   open|filtered ssh
+23/tcp   open|filtered telnet
+25/tcp   open|filtered smtp
+80/tcp   open|filtered http
+111/tcp  open|filtered rpcbind
+139/tcp  open|filtered netbios-ssn
+445/tcp  open|filtered microsoft-ds
+512/tcp  open|filtered exec
+513/tcp  open|filtered login
+514/tcp  open|filtered shell
+1099/tcp open|filtered rmiregistry
+1524/tcp open|filtered ingreslock
+2121/tcp open|filtered ccproxy-ftp
+3306/tcp open|filtered mysql
+5432/tcp open|filtered postgresql
+6667/tcp open|filtered irc
+8009/tcp open|filtered ajp13
+8180/tcp open|filtered unknown
+MAC Address: 02:42:AC:11:00:02 (Unknown)
+
+Nmap scan report for 172.17.0.1
+Host is up (0.0000040s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+22/tcp open|filtered ssh
+
+Nmap done: 256 IP addresses (2 hosts up) scanned in 4.54 seconds
+```
+<!-- ¿Qué revela nmap sobre los hosts en la red 172.17.0.0/24 -->
+<!-- ¿Qué puertos están abiertos en el host que identifican los servicios SMB en ejecución? ¿Cómo llama Nmap a estos servicios? -->
+- Realice un  análisis _nmap -sN_ en la subred 10.6.6.0/24
+```bash
+──(root㉿Kali)-[/home/kali]
+└─# nmap -sN 10.6.6.0/24
+Starting Nmap 7.94 ( https://nmap.org ) at 2025-12-01 06:04 UTC
+Nmap scan report for webgoat.vm (10.6.6.11)
+Host is up (0.0000040s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT     STATE         SERVICE
+8080/tcp open|filtered http-proxy
+8888/tcp open|filtered sun-answerbook
+9001/tcp open|filtered tor-orport
+MAC Address: 02:42:0A:06:06:0B (Unknown)
+
+Nmap scan report for juice-shop.vm (10.6.6.12)
+Host is up (0.0000060s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT     STATE         SERVICE
+3000/tcp open|filtered ppp
+MAC Address: 02:42:0A:06:06:0C (Unknown)
+
+Nmap scan report for dvwa.vm (10.6.6.13)
+Host is up (0.0000040s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+80/tcp open|filtered http
+MAC Address: 02:42:0A:06:06:0D (Unknown)
+
+Nmap scan report for mutillidae.vm (10.6.6.14)
+Host is up (0.0000040s latency).
+Not shown: 998 closed tcp ports (reset)
+PORT     STATE         SERVICE
+80/tcp   open|filtered http
+3306/tcp open|filtered mysql
+MAC Address: 02:42:0A:06:06:0E (Unknown)
+
+Nmap scan report for gravemind.vm (10.6.6.23)
+Host is up (0.0000040s latency).
+Not shown: 994 closed tcp ports (reset)
+PORT    STATE         SERVICE
+21/tcp  open|filtered ftp
+22/tcp  open|filtered ssh
+53/tcp  open|filtered domain
+80/tcp  open|filtered http
+139/tcp open|filtered netbios-ssn
+445/tcp open|filtered microsoft-ds
+MAC Address: 02:42:0A:06:06:17 (Unknown)
+
+Nmap scan report for 10.6.6.100
+Host is up (0.0000040s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+80/tcp open|filtered http
+MAC Address: 02:42:0A:06:06:64 (Unknown)
+
+Nmap scan report for 10.6.6.1
+Host is up (0.0000040s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+22/tcp open|filtered ssh
+
+Nmap done: 256 IP addresses (7 hosts up) scanned in 4.81 seconds
+```
+<!-- ¿Hay posibles equipos de destino en esta subred que ejecuten servicios SMB? ¿Qué computadora o computadoras? ¿Cómo lo sabe? -->
+
+## Parte 3: Use enum4linux para enumerar usuarios y recursos compartidos de archivos de red
+__Paso 1: Realice un análisis *enum4linux* en el objetivo 172.17.0.2__<br>
+En la parte 1, utilizó la página de ayuda de enum4linux para conocer las opciones disponibles para enumerar los posibles objetivos. Las opciones más comunes son:
+
+- **-U**: Busca usuarios configurados
+- **-S**: Obtiene una lista de los archivos compartidos
+- **-G**: Obtiene una lista de los grupos y sus miembros
+- **-P**: Enumera las políticas de contraseñas
+- **-i**: Obtiene una lista de impresoras
+
+Utilice la opción _enum4linux -U_ para enumerar los usuarios configurados en el 172.17.0.2 de destino. Recuerde que los comandos enum4linux requieren de root para ejecutarse.
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# enum4linux -U 172.17.0.2
+```
+El resultado de este comando puede generar varias pantallas de información si se detectan muchos usuarios. Enum4linux agrega la salida de varias herramientas de Samba para producir un resultado conciso. Si desea ver cómo se usa cada función, use la opción detallada (__-v__) con el comando.<br>
+Enumere los recursos compartidos de archivos disponibles en 172.17.0.2 mediante el comando _enum4linux -S_. Utilice la opción detallada para ver las herramientas de Samba que se utilizan para obtener la información.
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# enum4linux -Sv 172.17.0.2
+```
+Observe [V] al comienzo de algunas de las líneas de salida. El modo detallado proporciona una descripción de cómo se obtuvieron los resultados. Por ejemplo, en la sección _Enumerating Workgroup/Domain_ de la salida, enum4linux intentó obtener el nombre de dominio con el comando: _nmblookup -A '172.17.0.2'_.
+<!-- ¿Qué herramienta de Samba se utilizó para asignar los recursos compartidos de archivos? -->
+<!-- ¿Cuántos recursos compartidos de archivos se enumeran para el objetivo 172.17.0.2? ¿Qué indica el $ al final del nombre del recurso compartido? -->
+Es posible que los evaluadores de penetración no hayan descubierto una combinación conocida de nombre de usuario y contraseña para avanzar en su ataque. En este caso deben realizar un ataque de contraseña por fuerza bruta para obtener las credenciales necesarias. Es un beneficio conocer las políticas de contraseñas vigentes en el sistema de destino para estructurar el esfuerzo de fuerza bruta. Utilice el comando _enum4linux -P_ para enumerar las políticas de contraseñas.
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# enum4linux -P 172.17.0.2
+```
+<!-- ¿Cuál es la longitud mínima de contraseña establecida para las cuentas en este servidor? ¿Cuál es la configuración del umbral de bloqueo de la cuenta? -->
+<!-- ¿Cómo explicaría la seguridad de la política de contraseñas establecidas para este dominio? ¿Baja, media o alta? -->
+__Paso 2: Realice un escaneo de enumeración simple en el objetivo 10.6.6.23__
+Enum4linux tiene una opción que combina las opciones -U, -S, -G, -P, -r, -o, -n, -i en un solo comando. Esto requiere el uso del argumento _-a_. Esta opción realiza rápidamente varias operaciones de enumeración de SMB en un escaneo.<br>
+Use el comando _enum4linux -a_ para realizar un escaneo en el posible destino del servidor Samba que identificó en la parte 2.
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# enum4linux -a 10.6.6.23
+```
+<!-- ¿Cuántos usuarios y grupos locales hay en el objetivo 10.6.6.23? -->
+<!-- ¿Cuáles son los recursos compartidos que se encuentran en este objetivo? -->
+## Parte 4: Use smbclient para transferir archivos entre sistemas
+Smbclient es un componente de Samba que puede almacenar y recuperar archivos, de manera similar a un cliente FTP. Utilizará smbclient para transferir un archivo al sistema de destino 172.17.0.2. Esto simula la explotación de un host de red con malware a través de una vulnerabilidad de SMB.<br>
+Cree un archivo de texto con el comando _cat_. Nombre el archivo _badfile.txt_. Ingrese el texto deseado. Presiona __Ctrl + C__ cuando haya terminado.
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# cat >> badfile.txt
+This is a bad file.
+Press CRTL-C to write the file.
+```
+Observe las opciones disponibles con smbclient mediante el comando _smbclient -help_
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# smbclient --help
+```
+Utilice el comando _smbclient -L_ para enumerar los recursos compartidos en el host de destino. Este comando produce un resultado similar al que hizo el comando _enum4linux_ en la parte 3. Cuando se le solicite una contraseña, presione _Enter_. El carater doble / antes de la dirección IP y / son necesarios si el destino es una computadora con Windows.
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# smbclient -L //172.17.0.2/
+Password for [WORKGROUPkali]: <Press enter>
+```
+Conéctese al recurso compartido _tmp_ mediante el comando _smbclient_ especificando el nombre del recurso compartido y la dirección IP.
+```bash
+recurso compartido y la dirección IP.
+┌──(root㉿kali)-[/home/kali]
+└─# smbclient //172.17.0.2/tmp
+Password for [WORKGROUPkali]: <Press enter>
+smb: >
+```
+Tenga en cuenta que el indicador cambió a _smb: >_. Escriba _help_ para ver qué comandos están disponibles.
+- Introduzca _dir_ para ver el contenido del recurso compartido.
+- Cargue _badfile.txt_ al servidor de destino mediante el comando _put_. La sintaxis del comando es: _put local-file-name remote-file-name_
+```bash
+smb: > put badfile.txt badfile.txt
+Putting file badfile.txt as badfile.txt (19.5 kb/s) (average 19.5 kb/s)
+```
+Verifique que el archivo se haya cargado correctamente con el comando _dir_.
+```bash
+smb: \> dir
+  .                                   D        0  Mon Dec  1 06:17:20 2025
+  ..                                 DR        0  Mon Aug 14 10:39:59 2023
+  .X11-unix                          DH        0  Mon Aug 14 10:35:14 2023
+  .ICE-unix                          DH        0  Sun Jan 28 03:08:08 2018
+  .X0-lock                           HR       11  Mon Aug 14 10:35:14 2023
+  685.jsvc_up                         R        0  Sat Nov 29 02:28:41 2025
+  684.jsvc_up                         R        0  Fri Nov 14 00:41:07 2025
+  683.jsvc_up                         R        0  Thu Nov 20 04:00:00 2025
+  693.jsvc_up                         R        0  Wed Nov 19 04:34:23 2025
+  695.jsvc_up                         R        0  Mon Dec  1 06:01:01 2025
+  682.jsvc_up                         R        0  Mon Aug 14 10:35:26 2023
+  badfile.txt                         A       19  Mon Dec  1 06:17:20 2025
+  694.jsvc_up                         R        0  Thu Nov 20 22:07:30 2025
+  826.jsvc_up                         R        0  Sun Jan 28 07:08:40 2018
+  810.jsvc_up                         R        0  Sun Jan 28 03:54:31 2018
+  1582.jsvc_up                        R        0  Sun Jan 28 04:01:49 2018
+  1823.jsvc_up                        R        0  Sun Jan 28 02:57:44 2018
+
+                38497656 blocks of size 1024. 8289876 blocks available
+```
+Escriba _quit_ para salir de _smbclient_ y volver al indicador de la CLI.
