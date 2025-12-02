@@ -1,0 +1,33 @@
+# Envenenamiento de la caché de DNS
+El envenenamiento de la caché del DNS es otro ataque popular por los agentes de amenazas. En resumen, implica la manipulación de la caché de resolución de DNS mediante la inyección de datos DNS corruptos. Esto se hace para forzar al servidor DNS a enviar la dirección IP incorrecta a la víctima y redirigirla al sistema del atacante.<br>
+_Ejemplo de envenenamiento de caché de DNS_<br>
+
+<img src="Imagenes/envenenamiento_dns.jpeg" width="35%" height="35%" style="border-radius:10px;"><br>
+
+__Paso 1__. El atacante corrompe los datos de la caché del servidor DNS para hacerse pasar por el sitio web _theartofhacking.org_. Antes de que el atacante ejecute el ataque de envenenamiento del DNS, el servidor DNS resuelve correctamente la dirección IP de _theartofhacking.org_ en la dirección correcta (104.27.176.154) mediante el comando _nslookup_.<br>
+_Resolución de DNS antes del ataque de envenenamiento de caché de DNS_<br>
+```bash
+$ nslookup theartofhacking.org
+Server: 10.2.3.77
+Address: 10.2.3.77#53
+
+Non-authoritative answer:
+Name: theartofhacking.org
+Address: 104.27.176.154
+```
+__Paso 2__. Después de que el atacante ejecuta el ataque de envenenamiento del DNS, el servidor DNS resuelve theartofhacking.org en la dirección IP del sistema del atacante (10.2.3.4).<br>
+_Resolución de DNS después del ataque de envenenamiento de caché de DNS_<br>
+```bash
+$ nslookup theartofhacking.org
+Server: 10.2.3.77
+Address: 10.2.3.77#53
+
+Non-authorative answer:
+Name: theartofhacking.org
+Address: 10.2.3.4
+```
+__Paso 3__. La víctima envía una solicitud al servidor DNS para obtener la dirección IP del dominio theartofhacking.org
+__Paso 4__. El servidor DNS responde con la dirección IP del sistema del atacante
+__Paso 5__. La víctima envía un HTTP GET al sistema del atacante, y el atacante se hace pasar por el dominio theartofhacking.org.
+
+Los ataques de envenenamiento de caché de DNS también pueden combinar elementos de ingeniería social para manipular a las víctimas para que descarguen malware o para pedirles que ingresen datos confidenciales en formularios y aplicaciones falsificadas.
