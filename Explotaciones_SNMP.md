@@ -7,6 +7,20 @@ Puede aprovechar los scripts del motor de scripts de Nmap (NSE) para recopilar i
 <!-- cd /usr/share/nmap/scripts -->
 <!--  ls -l snmp* -->
 ```bash
+┌──(kali㉿Kali)-[/usr/share/nmap/scripts]
+└─$ ls -l snmp*
+-rw-r--r-- 1 root root  7816 Jun  1  2023 snmp-brute.nse
+-rw-r--r-- 1 root root  4388 Jun  1  2023 snmp-hh3c-logins.nse
+-rw-r--r-- 1 root root  5216 Jun  1  2023 snmp-info.nse
+-rw-r--r-- 1 root root 28644 Jun  1  2023 snmp-interfaces.nse
+-rw-r--r-- 1 root root  5978 Jun  1  2023 snmp-ios-config.nse
+-rw-r--r-- 1 root root  4156 Jun  1  2023 snmp-netstat.nse
+-rw-r--r-- 1 root root  4431 Jun  1  2023 snmp-processes.nse
+-rw-r--r-- 1 root root  1857 Jun  1  2023 snmp-sysdescr.nse
+-rw-r--r-- 1 root root  2570 Jun  1  2023 snmp-win32-services.nse
+-rw-r--r-- 1 root root  2739 Jun  1  2023 snmp-win32-shares.nse
+-rw-r--r-- 1 root root  4713 Jun  1  2023 snmp-win32-software.nse
+-rw-r--r-- 1 root root  2016 Jun  1  2023 snmp-win32-users.nse
  ```
  Además de los scripts de NSE, puede utilizar la herramienta __snmp-check__ para realizar un _SNMP walk_ a fin de recopilar información sobre los dispositivos configurados para SNMP.
 
@@ -17,6 +31,18 @@ Puede aprovechar los scripts del motor de scripts de Nmap (NSE) para recopilar i
  _Secuencia de comandos de NSE de retransmisión abierta de SMTP_<br>
  <!-- cd /usr/share/nmap/scripts -->
  <!-- nmap --script smtp-open-relay.nse 10.1.2.14 -->
+ ```bash
+┌──(root㉿Kali)-[/usr/share/nmap/scripts]
+└─# nmap --script smtp-open-relay.nse 10.1.2.4
+Starting Nmap 7.94 ( https://nmap.org ) at 2025-12-02 23:12 UTC
+Nmap scan report for 10.1.2.4
+Host is up (0.00065s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT   STATE SERVICE
+53/tcp open  domain
+
+Nmap done: 1 IP address (1 host up) scanned in 4.67 seconds
+ ```
  ## Comandos SMTP útiles
  Varios comandos SMTP pueden ser útiles para realizar una evaluación de seguridad de un servidor de correo electrónico. Los siguientes son algunos ejemplos:
  - __HELO__: Se utiliza para iniciar una conversación SMTP con un servidor de correo electrónico. El comando va seguido de una dirección IP o un nombre de dominio, por ejemplo _HELO 10.1.2.14_.
@@ -34,21 +60,187 @@ Puede aprovechar los scripts del motor de scripts de Nmap (NSE) para recopilar i
 <!-- telnet 192.168.78.8 25 -->
 _El comando SMTP **VRFY**_<br>
 ```bash
+┌──(root㉿Kali)-[~]
+└─# telnet 192.168.78.8 53
+Trying 192.168.78.8...
+Connected to 192.168.78.8.
+Escape character is '^]'.
+220 dionysus.theartofhacking.org ESMTP Postfix (Ubuntu)
+VRFY sys
+252 2.0.0 sys
+VRFY admin
+550 5.1.1 <admin>: Recipient address rejected: User unknown in local
+recipient table
+VRFY root
+252 2.0.0 root
+VRFY kali
+252 2.0.0 kali
 ```
 La herramienta __smtp-user-enum__ le permite automatizar estos pasos de recopilación de información.
 _Uso de la herramienta smtp-user-enum_
 ```bash
+┌──(root㉿Kali)-[~]
+└─# smtp-user-enum
+smtp-user-enum v1.2 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+Usage: smtp-user-enum [options] ( -u username | -U file-of-usernames ) ( -t host | -T file-of-targets )
+
+options are:
+        -m n     Maximum number of processes (default: 5)
+        -M mode  Method to use for username guessing EXPN, VRFY or RCPT (default: VRFY)
+        -u user  Check if user exists on remote system
+        -f addr  MAIL FROM email address.  Used only in "RCPT TO" mode (default: user@example.com)
+        -D dom   Domain to append to supplied user list to make email addresses (Default: none)
+                 Use this option when you want to guess valid email addresses instead of just usernames
+                 e.g. "-D example.com" would guess foo@example.com, bar@example.com, etc.  Instead of 
+                      simply the usernames foo and bar.
+        -U file  File of usernames to check via smtp service
+        -t host  Server host running smtp service
+        -T file  File of hostnames running the smtp service
+        -p port  TCP port on which smtp service runs (default: 25)
+        -d       Debugging output
+        -w n     Wait a maximum of n seconds for reply (default: 5)
+        -v       Verbose
+        -h       This help message
+
+Also see smtp-user-enum-user-docs.pdf from the smtp-user-enum tar ball.
+
+Examples:
+
+$ smtp-user-enum -M VRFY -U users.txt -t 10.0.0.1
+$ smtp-user-enum -M EXPN -u admin1 -t 10.0.0.1
+$ smtp-user-enum -M RCPT -U users.txt -T mail-server-ips.txt
+$ smtp-user-enum -M EXPN -D example.com -U users.txt -t 10.0.0.1
 ```
 La mayoría de los servidores de correo electrónico modernos deshabilitan los comandos __VRFY__ y __EXPN__. Se recomienda que desactive estos comandos SMTP. Los cortafuegos modernos también ayudan a proteger y bloquear cualquier intento de conexión SMTP con estos comandos.<br>
 _Enumeración de un usuario con la herramienta **smtp-user-enum**_<br>
 <!-- smtp-user-enum -M VRFY -u [usuario] -t 192.168.78.8 -->
 ```bash
+┌──(root㉿Kali)-[~]
+└─# smtp-user-enum -M VRFY -u kali -t 192.168.78.8
+Starting smtp-user-enum v1.2 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+ ----------------------------------------------------------
+|                   Scan Information                       |
+ ----------------------------------------------------------
+
+Mode ..................... VRFY
+Worker Processes ......... 5
+Target count ............. 1
+Username count ........... 1
+Target TCP port .......... 25
+Query timeout ............ 5 secs
+Target domain ............ 
+
+######## Scan started at Tue Dec  2 23:38:53 2025 #########
+######## Scan completed at Tue Dec  2 23:38:58 2025 #########
+0 results.
+
+1 queries in 5 seconds (0.2 queries / sec)
 ```
 ## Explotaciones conocidas del servidor SMTP
 Es posible aprovechar las explotaciones que se han creado para aprovechar las vulnerabilidades conocidas relacionadas con SMTP.<br>
 _Uso de **searchsploit** para encontrar explotaciones SMTP conocidas_
 <!-- searchsploit smtp -->
 ```bash
+┌──(root㉿Kali)-[~]
+└─# searchsploit smtp
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                                                                                                            |  Path
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+AA SMTP Server 1.1 - Crash (PoC)                                                                                                                                                                          | windows/dos/14990.txt
+Alt-N MDaemon 6.5.1 - IMAP/SMTP Remote Buffer Overflow                                                                                                                                                    | windows/remote/473.c
+Alt-N MDaemon 6.5.1 SMTP Server - Multiple Command Remote Overflows                                                                                                                                       | windows/remote/24624.c
+Alt-N MDaemon Server 2.71 SP1 - SMTP HELO Argument Buffer Overflow                                                                                                                                        | windows/dos/23146.c
+Apache James Server 2.2 - SMTP Denial of Service                                                                                                                                                          | multiple/dos/27915.pl
+BaSoMail 1.24 - SMTP Server Command Buffer Overflow                                                                                                                                                       | windows/dos/22668.txt
+BaSoMail Server 1.24 - POP3/SMTP Remote Denial of Service                                                                                                                                                 | windows/dos/594.pl
+BL4 SMTP Server < 0.1.5 - Remote Buffer Overflow (PoC)                                                                                                                                                    | windows/dos/1721.pl
+Blat 2.7.6 SMTP / NNTP Mailer - Local Buffer Overflow                                                                                                                                                     | windows/local/38472.py
+BulletProof FTP Server 2019.0.0.50 - 'SMTP Server' Denial of Service (PoC)                                                                                                                                | windows/dos/46422.py
+Cisco PIX Firewall 4.x/5.x - SMTP Content Filtering Evasion                                                                                                                                               | hardware/remote/20231.txt
+Citadel SMTP 7.10 - Remote Overflow                                                                                                                                                                       | windows/remote/4949.txt
+Cobalt Raq3 PopRelayD - Arbitrary SMTP Relay                                                                                                                                                              | linux/remote/20994.txt
+CodeBlue 5.1 - SMTP Response Buffer Overflow                                                                                                                                                              | windows/remote/21643.c
+CommuniCrypt Mail 1.16 - 'ANSMTP.dll/AOSMTP.dll' ActiveX                                                                                                                                                  | windows/remote/12663.html
+CommuniCrypt Mail 1.16 - SMTP ActiveX Stack Buffer Overflow (Metasploit)                                                                                                                                  | windows/remote/16566.rb
+Computalynx CMail 2.3 SP2/2.4 - SMTP Buffer Overflow                                                                                                                                                      | windows/remote/19495.c
+DeepOfix SMTP Server 3.3 - Authentication Bypass                                                                                                                                                          | linux/remote/29706.txt
+dSMTP Mail Server 3.1b (Linux) - Format String                                                                                                                                                            | linux/remote/981.c
+EasyMail Objects 'EMSMTP.DLL 6.0.1' - ActiveX Control Remote Buffer Overflow                                                                                                                              | windows/remote/10007.html
+EType EServ 2.9x - SMTP Remote Denial of Service                                                                                                                                                          | windows/dos/22123.pl
+Eudora 7.1 - SMTP ResponseRemote Remote Buffer Overflow                                                                                                                                                   | windows/remote/3934.py
+Exim ESMTP 4.80 - glibc gethostbyname Denial of Service                                                                                                                                                   | linux/dos/35951.py
+FloosieTek FTGate PRO 1.22 - SMTP MAIL FROM Buffer Overflow                                                                                                                                               | windows/dos/22568.pl
+FloosieTek FTGate PRO 1.22 - SMTP RCPT TO Buffer Overflow                                                                                                                                                 | windows/dos/22569.pl
+Free SMTP Server 2.2 - Spam Filter                                                                                                                                                                        | windows/remote/1193.pl
+Free SMTP Server 2.5 - Denial of Service (PoC)                                                                                                                                                            | windows/dos/46937.py
+GetSimple CMS My SMTP Contact Plugin 1.1.1 - Cross-Site Request Forgery                                                                                                                                   | php/webapps/49774.py
+GetSimple CMS My SMTP Contact Plugin 1.1.2 - Persistent Cross-Site Scripting                                                                                                                              | php/webapps/49798.py
+GoodTech SMTP Server 5.14 - Denial of Service                                                                                                                                                             | windows/dos/1162.pl
+Hastymail 1.x - IMAP SMTP Command Injection                                                                                                                                                               | php/webapps/28777.txt
+i.Scribe SMTP Client 2.00b - 'wscanf' Remote Format String (PoC)                                                                                                                                          | windows/dos/7249.php
+Inetserv 3.23 - SMTP Denial of Service                                                                                                                                                                    | windows/dos/16035.py
+Inframail Advantage Server Edition 6.0 < 6.37 - 'SMTP' Buffer Overflow                                                                                                                                    | windows/dos/1165.pl
+Ipswitch Imail Server 5.0 - SMTP HELO Argument Buffer Overflow                                                                                                                                            | windows/dos/23145.c
+iScripts AutoHoster - 'main_smtp.php' Traversal                                                                                                                                                           | php/webapps/38889.txt
+Jack De Winter WinSMTP 1.6 f/2.0 - Buffer Overflow                                                                                                                                                        | windows/dos/20221.pl
+LeadTools Imaging LEADSmtp - ActiveX Control 'SaveMessage()' Insecure Method                                                                                                                              | windows/remote/35880.html
+Lotus Domino 4.6.1/4.6.4 Notes - SMTPA MTA Mail Relay                                                                                                                                                     | multiple/dos/19368.sh
+Lotus Domino SMTP Router & Email Server and Client - Denial of Service                                                                                                                                    | multiple/dos/17549.txt
+MailEnable 1.x - SMTP 'HELO' Remote Denial of Service                                                                                                                                                     | windows/dos/28103.pl
+MailEnable 2.x - SMTP NTLM Multiple Authentication Vulnerabilities                                                                                                                                        | windows/dos/28735.pl
+MailEnable 3.13 SMTP Service - 'VRFY/EXPN' Denial of Service                                                                                                                                              | windows/dos/5235.py
+MailEnable Enterprise 1.x - SMTP Remote Denial of Service                                                                                                                                                 | windows/dos/916.pl
+MAILsweeper SMTP 4.2.1 + F-Secure Anti-Virus 5.0.2/5.2.1 - File Scanner Malicious Archive Denial of Service                                                                                               | windows/dos/21006.txt
+Mailtraq 2.1.0.1302 - Remote Format String SMTP Resource Consumption                                                                                                                                      | windows/dos/22780.txt
+Majordomo2 - 'SMTP/HTTP' Directory Traversal                                                                                                                                                              | multiple/remote/16103.txt
+MDaemon SMTP Server 5.0.5 - Null Password Authentication                                                                                                                                                  | windows/remote/23002.txt
+Mercury/32 Mail Server 3.32 < 4.51 - SMTP EIP Overwrite                                                                                                                                                   | windows/remote/4316.cpp
+Mercury/32 Mail SMTPD - AUTH CRAM-MD5 Buffer Overflow (Metasploit)                                                                                                                                        | windows/remote/16821.rb
+Mercury/32 Mail SMTPD - Remote Stack Overrun (PoC)                                                                                                                                                        | windows/dos/4294.pl
+Mercury/32 Mail SMTPD 4.51 - SMTPD CRAM-MD5 Remote Overflow                                                                                                                                               | windows/remote/4301.cpp
+Microsoft Exchange Server 4.0/5.0 - SMTP HELO Argument Buffer Overflow                                                                                                                                    | windows/remote/23113.c
+Microsoft IIS 4.0/5.0 - SMTP Service Encapsulated SMTP Address (MS99-027)                                                                                                                                 | windows/remote/21613.txt
+Microsoft Windows - ANI LoadAniIcon() Chunk Size Stack Buffer Overflow (SMTP) (MS07-017) (Metasploit)                                                                                                     | windows/remote/16698.rb
+MIMEsweeper For SMTP - Multiple Cross-Site Scripting Vulnerabilities                                                                                                                                      | asp/webapps/38318.txt
+Mock SMTP Server 1.0 - Remote Crash (PoC)                                                                                                                                                                 | windows/dos/37954.py
+nbSMTP 0.99 - 'util.c' Client-Side Command Execution                                                                                                                                                      | linux/remote/1138.c
+NetcPlus SmartServer 3.5.1 - SMTP Buffer Overflow                                                                                                                                                         | windows/remote/19494.c
+Network Associates Webshield SMTP 4.5 - Invalid Outgoing Recipient Field Denial of Service                                                                                                                | windows/dos/20432.txt
+NJStar Communicator 3.00 - MiniSMTP Server Remote (Metasploit)                                                                                                                                            | windows/remote/18057.rb
+NJStar Communicator MiniSmtp - Buffer Overflow (ASLR Bypass)                                                                                                                                              | windows/dos/18196.py
+OpenSMTPD - MAIL FROM Remote Code Execution (Metasploit)                                                                                                                                                  | linux/remote/48038.rb
+OpenSMTPD - OOB Read Local Privilege Escalation (Metasploit)                                                                                                                                              | linux/local/48185.rb
+OpenSMTPD 6.4.0 < 6.6.1 - Local Privilege Escalation + Remote Code Execution                                                                                                                              | openbsd/remote/48051.pl
+OpenSMTPD 6.6.1 - Remote Code Execution                                                                                                                                                                   | linux/remote/47984.py
+OpenSMTPD 6.6.3 - Arbitrary File Read                                                                                                                                                                     | linux/remote/48139.c
+OpenSMTPD < 6.6.3p1 - Local Privilege Escalation + Remote Code Execution                                                                                                                                  | openbsd/remote/48140.c
+Postcast Server Pro 3.0.61 / Quiksoft EasyMail - 'emsmtp.dll 6.0.1' Remote Buffer Overflow                                                                                                                | windows/remote/4328.html
+Postfix SMTP 4.2.x < 4.2.48 - 'Shellshock' Remote Command Injection                                                                                                                                       | linux/remote/34896.py
+Python smtplib 2.7.11 / 3.4.4 / 3.5.1 - Man In The Middle StartTLS Stripping                                                                                                                              | multiple/local/43500.txt
+QK SMTP 3.01 - 'RCPT TO' Remote Buffer Overflow (1)                                                                                                                                                       | windows/remote/2649.c
+QK SMTP 3.01 - 'RCPT TO' Remote Buffer Overflow (2)                                                                                                                                                       | windows/remote/3067.py
+QK SMTP 3.01 - 'RCPT TO' Remote Denial of Service                                                                                                                                                         | windows/dos/2625.c
+QK SMTP Server - Malformed Commands Multiple Remote Denial of Service Vulnerabilities                                                                                                                     | multiple/dos/30885.txt
+Qmail SMTP - Bash Environment Variable Injection (Metasploit)                                                                                                                                             | linux/remote/42938.rb
+Qmail SMTP 1.03 - Bash Environment Variable Injection                                                                                                                                                     | multiple/remote/48651.txt
+Qwik SMTP 0.3 - Format String                                                                                                                                                                             | linux/remote/620.c
+Sitemagic CMS - 'SMTpl' Directory Traversal                                                                                                                                                               | php/webapps/35877.txt
+SmartMax MailMax 1.0 - SMTP Buffer Overflow                                                                                                                                                               | windows/remote/20600.c
+Softek MailMarshal 4 / Trend Micro ScanMail 1.0 - SMTP Attachment Protection Bypass                                                                                                                       | multiple/remote/21029.pl
+SoftiaCom wMailServer 1.0 - SMTP Remote Buffer Overflow (Metasploit)                                                                                                                                      | windows/remote/1463.pm
+SPECTral Personal SMTP Server 0.4.2 - Denial of Service                                                                                                                                                   | windows/dos/899.pl
+SquirrelMail PGP Plugin - Command Execution (SMTP) (Metasploit)                                                                                                                                           | linux/remote/16888.rb
+sSMTP 2.62 - 'standardize()' Buffer Overflow                                                                                                                                                              | linux/dos/34375.txt
+SynaMan 4.0 build 1488 - SMTP Credential Disclosure                                                                                                                                                       | windows/webapps/45387.txt
+SysGauge 1.5.18 - SMTP Validation Buffer Overflow (Metasploit)                                                                                                                                            | windows/remote/41672.rb
+TABS MailCarrier 2.51 - SMTP 'EHLO' / 'HELO' Remote Buffer Overflow                                                                                                                                       | windows/remote/598.py
+TABS MailCarrier 2.51 - SMTP EHLO Overflow (Metasploit)                                                                                                                                                   | windows/remote/16822.rb
+YahooPOPs 1.6 - SMTP Port Buffer Overflow                                                                                                                                                                 | windows/remote/577.c
+YahooPOPs 1.6 - SMTP Remote Buffer Overflow                                                                                                                                                               | windows/remote/582.c
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+Shellcodes: No Results
 ```
 # Explotaciones de FTP
 Los atacantes suelen abusar de los servidores FTP para robar información. El protocolo FTP heredado no utiliza cifrado ni realiza ningún tipo de validación de integridad. La práctica recomendada dicta que implemente una alternativa más segura, como SFTP o FTPS.<br>
@@ -57,11 +249,28 @@ Además los servidores FTP a menudo permiten la autenticación de usuarios anón
 _Uso de Nmap para escanear un servidor FTP_<br>
 <!-- nmap -sV 172.16.20.136 -->
 ```bash
+┌──(root㉿Kali)-[~]
+└─# nmap -sV 172.16.20.136
+Starting Nmap 7.80 ( https://nmap.org ) at 2021-08-05 22:37 EDT
+Nmap scan report for 172.16.20.136
+Host is up (0.00081s latency).
+Not shown: 997 closed ports
+PORT STATE SERVICE VERSION
+21/tcp open ftp    vsftpd 3.0.3
+22/tcp open ssh    OpenSSH 7.2p2 Ubuntu 4ubuntu2.4 (Ubuntu Linux;
+protocol 2.0)
 ```
 _Verificación de inicio de sesión anónimo de FTP con Metasploit_<br>
 <!-- metasploit > use auxiliary/scanner/ftp/anonymous -->
 <!-- set RHOSTS 172.16.20.136 > exploit -->
 ```bash
+msf6 > use auxiliary/scanner/ftp/anonymous
+msf6 auxiliary(scanner/ftp/anonymous) > set RHOSTS 172.16.20.136
+RHOSTS => 172.16.20.136
+msf6 auxiliary(scanner/ftp/anonymous) > exploit
+
+[*] 172.16.20.136:21      - Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
 ```
 La mitigación de este ejemplo es editar el archivo de configuración del servidor FTP para deshabilitar el inicio de sesión anónimo. En este ejemplo, el servidor está usando vsFTPd y, por lo tanto, el archivo de configuración se encuentra en _/etc/vsftpd.conf_. Los siguientes son varios procedimientos recomendados adicionales para mitigar el abuso y los ataques al servidor FTP:
 
@@ -107,6 +316,46 @@ _La herramienta Empire_<br>
 <!-- Empire -->
 <!--(Empire) > use module powershell/credentials/mimikatz/golden_ticket -->
 ```bash
+(Empire) > use module powershell/credentials/mimikatz/golden_ticket
+(Empire: powershell/credentials/mimikatz/golden_ticket) > options
+                Name: Invoke-Mimikatz Golden Ticket
+              Module:  powershell/credentials/mimikatz/golden_ticket
+          NeedsAdmin: False
+           OpsecSafe: True
+            Language: powershell
+  MinLanguageVersion: 2
+          Background: True
+     OutputExtension: None
+
+Authors:
+  @JosephBialek
+  @gentilkiwi
+Description:
+  Runs PowerSploit's Invoke-Mimikatz function to generate a
+  golden ticket and inject it into memory.
+
+Comments:
+ http://clymb3r.wordpress.com/ http://blog.gentilkiwi.com htt
+ ps://github.com/gentilkiwi/mimikatz/wiki/module-~-kerberos
+Options:
+
+ Name   Required Value  Description
+ ----   -------- ------ -----------
+ CredID False           CredID from the store to use for ticket
+                           creation.
+ domain False           The fully qualified domain name.
+ user   True             Username to impersonate.
+ groups False           Optional comma separated group IDs for the
+                          ticket.
+ sid    False            The SID of the specified domain.
+ krbtgt False           krbtgt NTLM hash for the specified domain.
+ sids   False           External SIDs to add as sidhistory to the
+                          ticket.
+ id     False            id to impersonate, defaults to 500.
+ Agent  True     None   Agent to run module on.
+ endin  False           Lifetime of the ticket (in minutes).
+                          Default to 10 years.
+(Empire: powershell/credentials/mimikatz/golden_ticket) > 
 ```
 Un ataque similar es el ataque del _tiquete de plata de Kerberos_. Los tiquetes plateados son tiquetes de servicio falsificados para un servicio determinado en un servidor en particular. El sistema de archivos de Internet común (CIFS) de Windows le permite acceder a archivos en un servidor en particular y el servicio HOST le permite ejecutar __schtasks.exe__ o Instrumentación de administración de Windows (WMI) en un servidor determinado. Para crear un tiquete plateado, necesita la cuenta del sistema (que termina en __$__), el identificador de seguridad (SID) para el dominio, el nombre de dominio completo y el servicio proporcionado (por ejemplo, CIFS, HOST). También puede utilizar herramientas como Empire para obtener la información relevante de un volcado de Mimikatz para un sistema comprometido.
 Otra debilidad en las implementaciones de Kerberos es el uso de la delegación de Kerberos sin restricciones. La delegación de Kerberos es una función que permite que una aplicación reutilice las credenciales del usuario final para acceder a los recursos alojados en un servidor diferente. Por lo general, debe permitir la delegación de Kerberos solo si el servidor de aplicaciones es de confianza; sin embargo, permitirlo podría tener consecuencias de seguridad negativas si se abusa y, por lo tanto, la delegación de Kerberos no está habilitada de manera predeterminada en Active Directory.
