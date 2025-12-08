@@ -1,3 +1,130 @@
 # Práctica de laboratorio - Ataques en la ruta con Ettercap
 
 ## Topología
+<img src="Imagenes/topologia_etter.jpeg" width="35%" height="35%" style="border-radius:10px;">
+
+## Objetivos
+En esta práctica de laboratorio se cumplirán los siguientes objetivos:
+- __Parte 1__: Iniciar Ettercap y explorar sus funcionalidades
+- __Parte 2__: Realizar el ataque en ruta (MITM)
+- __Parte 3__: Usar Wireshark para observar el ataque de suplantación de ARP
+
+## Trasfondo / Escenario
+Los ataques en ruta son formas muy potentes de robar datos que viajan por una red. Sin el cifrado de extremo a extremo, como sucede con muchos datos que viajan en las LAN locales, es fácil capturar información de texto sin cifrar, e incluso archivos completos, mediante métodos de ataque en ruta.
+
+## Recursos necesarios
+- Kali VM personalizada para el curso de Ethical Hacker
+
+## Parte 1: Inicie Ettercap y explore sus funcionalidades
+Ettercap se usa para realizar ataques en ruta (MITM). El objetivo de un ataque en ruta es interceptar el tráfico entre dispositivos para obtener información que pueda utilizarse para hacerse pasar por el objetivo o alterar los datos que se transmiten. El atacante se encuentra "entre" dos hosts en comunicación. En los ataques en ruta, el hacker no necesita comprometer el dispositivo objetivo, sino que solo puede "olfatear" o rastrear el tráfico que va y viene entre el objetivo y el destino. Ettercap se utiliza como herramienta en ruta y la máquina de ataque está en la misma red IP que la víctima.
+
+__Paso 1: Configure un ataque de suplantación de ARP__<br>
+En este ataque, utilizará la suplantación de ARP para redirigir el tráfico en la red virtual local a su sistema Kali Linux 10.6.6.1. La suplantación de ARP se utiliza a menudo para suplantar el enrutador de puerta de enlace predeterminado para capturar todo el tráfico que entra o sale de la red IP local. Debido a que su entorno de laboratorio utiliza una red virtual interna, en lugar de falsificar la puerta de enlace predeterminada, utilizará la suplantación de ARP para redirigir el tráfico destinado a un servidor local con la dirección 10.6.6.13
+- Abra una sesión de terminal desde la barra de menús
+- El host de destino en esta práctica de laboratorio es el dispositivo Linux 10.6.6.23. Para ver la red desde la perspectiva del destino e iniciar el tráfico entre el destino y el servidor, utilice SSH para iniciar sesión en este host. El nombre de usuario es _labuser_ y la contraseña es _Cisco123_.<br>
+El usuario del host 10.6.6.23 se comunica con el servidor en 10.6.6.13. El atacante en ruta en 10.6.6.1 interceptará y retransmitirá el tráfico entre estos hosts.<br>
+
+- Dado que está creando un ataque en ruta que utiliza la suplantación de ARP, supervisará las asignaciones de ARP en el host de la víctima. El ataque provocará cambios en esas asignaciones.<br>
+Utilice el comando _ip neighbor_ para ver la caché ARP actual en la computadora de destino. 
+```bash
+labuser@3fb0515ea2f7:/$ ip neighbor
+10.6.6.1 dev eth0 llanddr 02:42:17:81:d2:45 REACHABLE 
+```
+__Paso 2: Cargue la interfaz gráfica de usuario de Ettercap para comenzar a escanear__
+- Abra una nueva sesión de terminal. No cierre el terminal SSH que ejecuta la versión con 10.6.6.23.
+- Utilice el comando _ettercap -h_ para ver el archivo de ayuda de la aplicación Ettercap.<br>
+```bash
+┌──(kali㉿kali)-[~]
+└─# ettercap -h
+```
+- En esta parte, usará una interfaz gráfica de usuario para acceder a Ettercap. Inicie la interfaz gráfica de usuario de Ettercap GTK+ con el comando _ettercap -G_. La mayoría de las funciones de Ettercap requieren permisos root, así que use el comando _sudo_ para obtener los permisos requeridos.
+```bash
+┌──(kali㉿kali)-[~]
+└─# sudo ettercap -G
+```
+- La GUI de Ettercap se abre en una nueva ventana. Está analizando el tráfico en una red virtual interna. La configuración predeterminada es escanear mediante la interfaz eth0. Cambie la interfaz de detección a _br-internal_, que es la interfaz configurada en la red virtual 10.6.6.0/24, cambiando el valor en la lista desplegable __Setup > Primary Interface__.
+- Haga clic en el ícono de la casilla de verificación en la parte superior derecha de la pantalla de Ettercap para continuar. Aparece un mensaje en la parte inferior de la pantalla que indica que se ha iniciado el rastreo unificado.
+
+## Parte 2: Realizar el ataque en ruta (MITM)
+__Paso 1: Seleccionar los dispositivos de destino__<br>
+- En la ventana GUI de Ettercap, abra la ventana Hosts List haciendo clic en el menú de Ettercap. Seleccione la entrada _Hosts_ y luego _Hosts List_. Haga clic en el ícono _Scan for hosts (lupa)_ en la parte superior izquierda de la barra  de menús para buscar hosts vecinos. Aparece una lista de los hosts detectados en la red 10.6.6.0/24 en la ventana Hosts List.<br>
+Al menos una de las direcciones MAC debe resultar familiar.<br>
+- Defina los dispositivos de origen y destino del ataque, para ello, haga clic en la dirección IP 10.6.6.23 en la ventana para resaltar el host del usuario de destino. Haga clic en el botón __Add to Target 1__ en la parte inferior de la ventana Host List. Esto define el host de usuario como Target 1.
+- Haga clic en la dirección IP del servidor web de destino en 10.6.6.13 para resaltar la línea. Haga clic en el botón __Add to Target 2__ en la parte inferior de la ventana del host.<br>
+Cualquier dirección IP/MAC especificada como Target 1 tendrá todo su tráfico desviado a través de la computadora atacante que ejecuta Ettercap. En esta práctica de laboratorio, la computadora atacante es 10.6.6.1. Todas las demás computadoras de la subred, excepto los destinos, se comunicarán normalmente.
+
+- Haga clic en el ícono de MITM en la barra de menús (primer ícono circular en la parte superior derecha). Seleccione __ARP Poisoning...__ en el menú desplegable. Verifique que __Sniff remote connections__ esté seleccionado. Haga clic en __OK__.
+- Se inicia la explotación MITM. Si la detección no se inicia inmediatamente haga clic en la opción __Start__ (botón de reproducción) a la izquierda en el menú superior.
+
+__Paso 2: Realizar el ataque de suplantación de ARP__<br>
+- Regrese a la ventana de terminal que ejecuta la sesión SSH con el host del usuario de destino en 10.6.6.23. Repita el ping a 10.6.6.13.
+```bash
+labuser@3fb0515ea2f7:/$ ping -c 5 10.6.6.13
+```
+- Utilice el comando _ip neighbor_ para ver la tabla ARP en 10.6.6.23 nuevamente. Tenga en cuenta la dirección MAC enumerada para 10.6.6.13
+- Ahora, la dirección MAC asociada con 10.6.6.13 debe ser igual que la asociada con 10.6.6.1, esto es extraño porque dos dispositivos no deberían tener la misma dirección MAC, en este caso, los paquetes que se envían mediante LAN, también serán recibidos por el atacante.
+- Cierre la interfaz gráfica de usuario de Ettercap. Deje activa la conexión SSH a 10.6.6.23.
+
+# Parte 3: Usar Wireshark para observar el ataque de suplantación de ARP
+__Paso 1: Seleccionar los dispositivos de destino y realizar el ataque MITM con la CLI__<br>
+En esta paso, usará la interfaz de línea de comandos en Ettercap para realizar la suplantación de ARP y escribir un archivo _.pcap_ que se pueda abrir en Wireshark. Consulte la información de ayuda de Ettercap para interpretar las opciones utilizadas en los comandos.
+- Regrese a la sesión de terminal conectada mediante SSH a 10.6.6.23. Haga ping a las direcciones IP 10.6.6.11 y 10.6.6.13. 10.6.6.11 es otro host en la LAN que verificaremos no se ve afectado por el ataque. Luego, use el comando _ip neighbor_ para encontrar las direcciones MAC asociadas con las direcciones IP de los dos sistemas.
+```bash
+labuser@3fb0515ea2f7:/$ ping -c 5 10.6.6.11
+labuser@3fb0515ea2f7:/$ ping -c 5 10.6.6.13
+labuser@3fb0515ea2f7:/$ ip neighbor
+```
+__Nota__: Para encontrar la MAC de 10.6.6.23, vaya al terminal de sesión SSH e ingrese el comando _ip address_. Determine la dirección MAC de la interfaz que se direcciona en la red 10.6.6.24.
+- El comando _ettercap -T_ ejecuta Ettercap en modo texto, en lugar de utilizar la interfaz gráfica de usuario. La sintaxis para iniciar Ettercap y especificar los destinos es: _sudo ettercap -T [opciones] -q -i [interfaz] --write [nombre de archivo] --mitm arp /[target 1]// /[target 2]//_.
+- En una ventana de terminal, ingrese el comando de la siguiente manera para guardar el archivo pcap en el directorio de trabajo actual:
+```bash
+┌──(kali@kali)-[~]
+└─$sudo ettercap -T -q -i br-internal --write mitm-saved.pcap --mitm arp /10.6.6.23// /10.6.6.13//
+```
+Cuando se inicie Ettercap, recibirá un resultado similar al que se muestra:
+```bash
+ettercap 0.8.3.1 copyright 2001-2020 Ettercap Development Team
+Listening on:
+br-internal -> 02:42:14:BB:18:BD
+          10.6.6.1/255.255.255.0
+          fe80::42:14ff:febb:18bd/64
+
+SSL dissection needs a valid 'redir_command_on' script in the etter.conf file
+Privileges dropped to EUID 65534 EGID 65534...
+
+  34 plugins
+  42 protocol dissectors
+  57 ports monitored
+28230 mac vendor fingerprint
+1766 tcp OS fingerprint
+2182 known services
+Lua: no scripts were specified, not starting up!
+
+Scanning for merged targets (2 hosts)...
+* |==================================================>| 100.00 %
+2 hosts added to the hosts list...
+
+ARP poisoning victims:
+ 
+
+ GROUP 1 : 10.6.6.23 02:42:0A:06:06:17
+
+ GROUP 2 : 10.6.6.11 02:42:0A:06:06:0B
+Starting Unified sniffing...
+Text only Interface activated...
+Hit 'h' for inline help
+```
+Regrese a la sesión de terminal SSH en 10.6.6.23. Haga ping a las dos direcciones IP 10.6.6.11 y 10.6.6.13, nuevamente. Utilice el comando _ip neighbor_ para ver las direcciones MAC asociadas.
+Las direcciones MAC asociadas con las direcciones IP 10.6.6.1 y 10.6.6.13 deben ser las mismas.
+- Cierre la sesión de terminal SSH que está conectada a 10.6.6.23 y vuelva a la sesión de terminal que ejecuta Ettercap en modo de texto. Ingrese _q_ para salir de Ettercap.
+
+__Paso 2: Abra Wireshark para ver el archivo PCAP guardado__<br>
+En este paso, examinará el archivo .pcap que creo Ettercap.
+- Revise las direcciones MAC para 10.6.6.23 y 10.6.6.1, estas deben tener la misma dirección MAC, mientras 10.6.6.1 no cambia debido a que no es la máquina víctima.
+- En la ventana de terminal de Kali, inicie Wireshark con el archivo __mitm-saved.pcap__ que creó con Ettercap.
+```bash
+┌──(kali@kali)-[~]
+└─$ wireshark mitm-saved.pcap
+```
+- La computadora de ataque Ettercap primero difunde solicitudes ARP para obtener las direcciones MAC reales para los dos hosts de destino, 10.6.6.23 y 10.6.6.11. La máquina atacante comienza a enviar respuestas ARP a ambos hosts de destino utilizando su propia MAC para ambas direcciones IP. Esto hace que los dos hosts de destino dirijan las tramas de Ethernet a la computadora del atacante, lo que le permite recopilar datos como un atacante en ruta.
+- La computadora que ejecuta el ataque a Ettercap debe estar en la misma red que en el sistema objetivo para que los datos enviados también sean recibidos por el atacante.
