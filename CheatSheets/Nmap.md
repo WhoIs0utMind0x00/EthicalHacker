@@ -1,28 +1,29 @@
-# Cheat Sheet - Nmap
+# NMAP Cheat Sheet
 
-Nmap (Network Mapper) es una poderosa herramienta de código abierto para el descubrimiento de redes y auditorías de seguridad. Es esencial para pruebas de penetración, inventario de redes y evaluaciones de seguridad.<br>
+Nmap (Network Mapper) is a powerful open-source tool for network discovery and security auditing. It's essential for penetration testing, network inventory, and security assessments.
 
-## Tabla de Contenidos
-- [Sintaxis Básica](#sintaxis-básica)
-- [Especificación de Objetivo](#especificación-de-objetivo)
-- [Especificación de Puerto](#especificación-de-puerto)
-- [Estado del Puerto](#estado-del-puerto)
-- [Tipos de Escaneo](#tipos-de-escaneo)
-- [Descubrimiento de Hosts](#descubrimiento-de-hosts)
-- [Opciones de Tiempo](#opciones-de-tiempo)
-- [Técnicas de Evasión](#técnicas-de-evasión)
+## 📋 Table of Contents
+- [Basic Syntax](#basic-syntax)
+- [Target Specification](#target-specification)
+- [Port Specification](#port-specification)
+- [Port Status](#port-status)
+- [Scan Types](#scan-types)
+- [Host Discovery](#host-discovery)
+- [Timing Options](#timing-options)
+- [Evasion Techniques](#evasion-techniques)
 - [Nmap Scripting Engine (NSE)](#nmap-scripting-engine-nse)
-- [Opciones de Salida](#opciones-de-salida)
-- [Ejemplos Prácticos](#ejemplos-prácticos)
+- [Output Options](#output-options)
+- [Practical Examples](#practical-examples)
 
-## Sintaxis básica
+## Basic Syntax
 
 ```bash
-    nmap [ScanType] [Options] {targets}
+nmap [ScanType] [Options] {targets}
 ```
-Si no se especifica un rango, Nmap escanea los 1000 puertos más populares.<br>
 
-## Especificación de Objetivo
+If no port range is specified, Nmap scans the 1,000 most popular ports.
+
+## Target Specification
 
 ```bash
 # Single IP
@@ -47,7 +48,7 @@ nmap 192.168.1.0/24 --exclude 192.168.1.1
 nmap 192.168.1.0/24 --excludefile exclude.txt
 ```
 
-## Especificación de Puerto
+## Port Specification
 
 | Option | Description | Example |
 |--------|-------------|---------|
@@ -60,7 +61,7 @@ nmap 192.168.1.0/24 --excludefile exclude.txt
 | `--top-ports <n>` | Scan n most popular ports | `nmap --top-ports 20 192.168.1.1` |
 | `-r` | Scan ports linearly | `nmap -r 192.168.1.1` |
 
-## Estado del Puerto
+## Port Status
 
 | Status | Description |
 |--------|-------------|
@@ -71,7 +72,7 @@ nmap 192.168.1.0/24 --excludefile exclude.txt
 | **Open\|Filtered** | Port was filtered or open but Nmap couldn't determine which |
 | **Closed\|Filtered** | Port was filtered or closed but Nmap couldn't determine which |
 
-## Tipos de Escaneo
+## Scan Types
 
 | Option | Scan Type | Description | Requires Root |
 |--------|-----------|-------------|---------------|
@@ -90,7 +91,7 @@ nmap 192.168.1.0/24 --excludefile exclude.txt
 | `-sO` | IP Protocol Scan | Determines IP protocols | Yes |
 | `--scanflags` | Custom Scan | Custom TCP flags | Yes |
 
-### Ejemplos de Tipos de Escaneo
+### Scan Type Examples
 
 ```bash
 # SYN Scan (stealthy)
@@ -115,7 +116,7 @@ sudo nmap -A 192.168.1.1
 sudo nmap --scanflags URGACKPSHRSTSYNFIN 192.168.1.1
 ```
 
-## Descubrimiento de Hosts
+## Host Discovery
 
 | Option | Description |
 |--------|-------------|
@@ -131,7 +132,7 @@ sudo nmap --scanflags URGACKPSHRSTSYNFIN 192.168.1.1
 | `-PR` | ARP ping (local network) |
 | `--traceroute` | Trace path to host |
 
-### Ejemplos de Descubrimiento
+### Discovery Examples
 
 ```bash
 # Ping scan to find live hosts
@@ -150,11 +151,11 @@ nmap -PE 192.168.1.0/24
 sudo nmap -PR 192.168.1.0/24
 ```
 
-## Opciones de Tiempo
+## Timing Options
 
 Nmap has built-in timing templates and fine-grained controls.
 
-### Plantillas de Tiempo
+### Timing Templates
 
 | Option | Name | Description | Use Case |
 |--------|------|-------------|----------|
@@ -190,9 +191,9 @@ nmap --scan-delay 1s 192.168.1.1
 nmap --min-rate 100 --max-rate 1000 192.168.1.1
 ```
 
-## Técnicas de Evasión
+## Evasion Techniques
 
-### Fragmentación
+### Fragmentation
 
 ```bash
 # Fragment packets
